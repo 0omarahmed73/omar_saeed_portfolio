@@ -3,13 +3,14 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-export default function Network() {
+export default function Network({ primaryColor = '#b8ff3d' }) {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const coarse = matchMedia('(pointer: coarse)').matches;
     const scene = new THREE.Scene();
+    const hex = Number.parseInt(primaryColor.replace('#', ''), 16) || 0xb8ff3d;
     const camera = new THREE.PerspectiveCamera(42, el.clientWidth / el.clientHeight, .1, 100);
     camera.position.z = 9;
 
@@ -30,7 +31,7 @@ export default function Network() {
     ));
 
     const pointGeo = new THREE.BufferGeometry().setFromPoints(points);
-    const pointMat = new THREE.PointsMaterial({ color: 0xb8ff3d, size: .045, transparent: true, opacity: .8 });
+    const pointMat = new THREE.PointsMaterial({ color: hex, size: .045, transparent: true, opacity: .8 });
     group.add(new THREE.Points(pointGeo, pointMat));
 
     const segments = [];
@@ -43,7 +44,7 @@ export default function Network() {
 
     const glow = new THREE.Mesh(
       new THREE.IcosahedronGeometry(2.3, 3),
-      new THREE.MeshBasicMaterial({ color: 0xb8ff3d, wireframe: true, transparent: true, opacity: .035 })
+      new THREE.MeshBasicMaterial({ color: hex, wireframe: true, transparent: true, opacity: .035 })
     );
     group.add(glow);
 
@@ -81,6 +82,6 @@ export default function Network() {
       renderer.dispose();
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };
-  }, []);
+  }, [primaryColor]);
   return <div ref={ref} aria-hidden className="absolute inset-0 opacity-90" />;
 }
