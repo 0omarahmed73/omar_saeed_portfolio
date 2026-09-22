@@ -137,6 +137,7 @@ export default function Page() {
   const [theme, setTheme] = useState(DEFAULT_THEME);
   const [hydrated, setHydrated] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
+  const [projectFilter, setProjectFilter] = useState('All');
 
   useEffect(() => {
     document.documentElement.lang = 'en';
@@ -250,7 +251,7 @@ export default function Page() {
   const toggleTheme = () => setTheme(v => v === 'light' ? 'dark' : 'light');
 
   return <div ref={root} className="site-shell">
-    <svg className="project-filters" aria-hidden="true"><defs>{[0,1,2].map(i => <filter key={i} id={`distort-${i}`} x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".012 .018" numOctaves="2" seed={i + 4} /><feDisplacementMap in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G" /></filter>)}</defs></svg>
+    <svg className="project-filters" aria-hidden="true"><defs>{t.projects.map((_, i) => <filter key={i} id={`distort-${i}`} x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".012 .018" numOctaves="2" seed={i + 4} /><feDisplacementMap in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G" /></filter>)}</defs></svg>
     <div className="scroll-progress"><span ref={progress} /><b ref={progressLabel}>OVERVIEW</b></div>
     <div ref={cursor} className="cursor-dot" aria-hidden="true" />
     <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} onTheme={toggleTheme} onColor={setPrimaryColor} />
@@ -271,7 +272,8 @@ export default function Page() {
 
     <main>
       <section id="projects" className="section section-pad"><Reveal><div className="section-heading"><span className="section-number">02</span><div><p className="eyebrow">{t.workLabel}</p><h2>{t.hp}</h2></div><p className="heading-note">{t.workNote}</p></div></Reveal>
-        <div className="project-grid">{t.projects.map(([n,s,b,tags,accent],i)=><article key={n} className={`project-card project-${i}`}><div className="project-visual"><div className="browser"><i/><i/><i/></div><div className="visual-ui"><span className="visual-title">{accent}</span><div className="visual-bars"><b/><b/><b/><b/></div><div className="visual-panel"><em/><em/><em/></div><span className="visual-live">INTERACTIVE PREVIEW</span></div><span className="project-number">0{i+1}</span><span className="distort-label">MOVE TO DISTORT</span></div><div className="project-info"><div><p className="project-type">{s}</p><h3>{n}</h3></div><p>{b}</p><ul>{tags.map(x=><li key={x}>{x}</li>)}</ul></div></article>)}</div>
+        <div className="project-toolbar" role="tablist" aria-label="Filter projects">{['All','ERP','Website','Dashboard','AI','Real Estate','Upgrade'].map(filter => <button key={filter} type="button" role="tab" aria-selected={projectFilter === filter} className={projectFilter === filter ? 'is-active' : ''} onClick={() => setProjectFilter(filter)}>{filter}</button>)}</div>
+        <div className="project-grid">{t.projects.map(([n,s,b,tags,accent,category,url],i)=>{ const visible = projectFilter === 'All' || category === projectFilter; return <article key={n} className={`project-card project-${i} ${visible ? '' : 'is-filtered'}`} aria-hidden={!visible}><div className="project-visual"><div className="browser"><i/><i/><i/></div>{url && <a className="project-link" href={url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${n} website in a new tab`} title="Open live website"><span aria-hidden="true">↗</span><small>LIVE SITE</small></a>}<div className="visual-ui"><span className="visual-title">{accent}</span><div className="visual-bars"><b/><b/><b/><b/></div><div className="visual-panel"><em/><em/><em/></div><span className="visual-live">INTERACTIVE PREVIEW</span></div><span className="project-number">{String(i + 1).padStart(2, '0')}</span><span className="distort-label">MOVE TO DISTORT</span></div><div className="project-info"><div><p className="project-type">{s}</p><h3>{n}</h3></div><p>{b}</p><ul>{tags.map(x=><li key={x}>{x}</li>)}</ul><span className="project-category">{category}</span></div></article>})}</div>
       </section>
 
       <section id="skills" className="section section-pad skills-section"><Reveal><div className="section-heading"><span className="section-number">03</span><div><p className="eyebrow">{t.stackLabel}</p><h2>{t.hs}</h2></div><p className="heading-note">Click a discipline to explore the tools behind my systems.</p></div></Reveal><div className="skills-layout"><div className="skill-statement parallax">{t.skillStatement}</div><InteractiveStack /></div></section>
