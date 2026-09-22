@@ -138,6 +138,33 @@ export default function Page() {
   const [hydrated, setHydrated] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [projectFilter, setProjectFilter] = useState('All');
+  const filterAnimated = useRef(false);
+
+  useEffect(() => {
+    if (projectFilter === 'All' && !filterAnimated.current) return;
+    filterAnimated.current = true;
+    const cards = gsap.utils.toArray('.project-card');
+    const visible = cards.filter(card => !card.classList.contains('is-filtered'));
+    if (!visible.length) return;
+
+    // Filtering changes the DOM layout. The original scroll-triggered reveal can
+    // leave newly promoted cards at opacity: 0, so reset the card state and
+    // play a dedicated entrance animation after React has painted the new layout.
+    ScrollTrigger.getAll().forEach(trigger => {
+      if (trigger.trigger?.classList?.contains('project-card')) trigger.kill();
+    });
+    gsap.killTweensOf(cards);
+    gsap.set(cards, { clearProps: 'opacity,transform' });
+
+    const raf = requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      gsap.fromTo(visible,
+        { y: 36, opacity: 0, rotateX: 4 },
+        { y: 0, opacity: 1, rotateX: 0, duration: .65, stagger: .07, ease: 'power3.out', overwrite: 'auto' }
+      );
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [projectFilter]);
 
   useEffect(() => {
     document.documentElement.lang = 'en';
