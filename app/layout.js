@@ -1,4 +1,5 @@
 import './globals.css';
+import './pantheon.css';
 import { Bricolage_Grotesque, Inter, Cormorant, Instrument_Sans } from 'next/font/google';
 
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--f-display' });
@@ -8,10 +9,10 @@ const serif = Cormorant({ subsets: ['latin'], weight: ['400', '500', '600'], sty
 const ui = Instrument_Sans({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--f-ui' });
 
 export const metadata = {
-  title: 'Omar Ahmed Saeed — Odoo Developer',
+  title: 'Omar A. Saeed — Odoo Developer',
   description: 'Frontend-focused Odoo developer building polished OWL apps, custom modules and websites.',
 };
 
 export default function Layout({ children }) {
-  return <html lang="en" className={`${display.variable} ${body.variable} ${serif.variable} ${ui.variable}`}><body>{children}</body></html>;
+  return <html lang="en" style={{ colorScheme: 'dark', backgroundColor: '#101722' }} className={`${display.variable} ${body.variable} ${serif.variable} ${ui.variable}`}><body>{children}</body></html>;
 }

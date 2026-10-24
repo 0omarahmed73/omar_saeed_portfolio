@@ -4,19 +4,20 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
+import Splash from '@/components/Splash';
 import AtlasStage from '@/components/atlas/AtlasStage';
 import ProjectList from '@/components/atlas/ProjectList';
-import { D, skills, ATLAS_SOURCE, ATLAS_LICENSE } from '@/lib/data';
+import AnubisFigure from '@/components/atlas/AnubisFigure';
+import { D, skills, ATLAS_SOURCE, ATLAS_FALLBACK_SOURCE, ATLAS_LICENSE } from '@/lib/data';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ids = ['overview', 'projects', 'skills', 'experience', 'contact'];
 const COLOR_STORAGE_KEY = 'omar-portfolio-primary';
-const THEME_STORAGE_KEY = 'omar-portfolio-theme';
-const DEFAULT_COLOR = '#b8ff3d';
-const DEFAULT_THEME = 'dark';
+const DEFAULT_COLOR = '#B99A5B';
 
 const COLOR_PALETTE = [
+  { name: 'Gold', value: '#B99A5B' },
   { name: 'Acid', value: '#b8ff3d' },
   { name: 'Electric Blue', value: '#5ee7ff' },
   { name: 'Violet', value: '#9b7cff' },
@@ -24,6 +25,10 @@ const COLOR_PALETTE = [
   { name: 'Amber', value: '#ffc857' },
   { name: 'Mint', value: '#5ff2b3' },
 ];
+
+function AtlasMark() {
+  return <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="22" r="14" /><ellipse cx="32" cy="22" rx="14" ry="4.6" strokeWidth="1.4" /><path d="M32 8v28" strokeWidth="1.4" /><path d="M8 58 L27 33 M56 58 L37 33" /><path d="M19 49h26" strokeWidth="1.8" /></svg>;
+}
 
 function Magnetic({ children, className = '', strength = 0.22 }) {
   const ref = useRef(null);
@@ -81,14 +86,6 @@ function ColorPalette({ color, onChange }) {
   );
 }
 
-function ThemeToggle({ theme, onChange }) {
-  const light = theme === 'light';
-  return <button type="button" className="theme-toggle magnetic" aria-label={`Switch to ${light ? 'dark' : 'light'} theme`} onClick={() => onChange(light ? 'dark' : 'light')}>
-    <span className="theme-icon" aria-hidden="true">{light ? '☾' : '☼'}</span>
-    <span className="theme-label">{light ? 'LIGHT' : 'DARK'}</span>
-  </button>;
-}
-
 function InteractiveStack() {
   const groups = Object.entries(skills);
   const [active, setActive] = useState('Odoo');
@@ -104,7 +101,7 @@ function InteractiveStack() {
   </div>;
 }
 
-function CommandPalette({ open, onClose, onTheme, onColor }) {
+function CommandPalette({ open, onClose, onColor }) {
   const inputRef = useRef(null);
   const commands = [
     ['Projects', '#projects'], ['Skills', '#skills'], ['Experience', '#experience'], ['Contact', '#contact'],
@@ -120,8 +117,7 @@ function CommandPalette({ open, onClose, onTheme, onColor }) {
       <div className="command-search"><span>⌘K</span><input ref={inputRef} placeholder="Search portfolio..." aria-label="Search portfolio" /></div>
       <div className="command-list">
         {commands.map(([label, href], i) => <a key={href} href={href} onClick={onClose}><b>{String(i + 1).padStart(2, '0')}</b>{label}<span>↗</span></a>)}
-        <button type="button" onClick={() => { onTheme(); onClose(); }}><b>05</b>Toggle theme<span>◐</span></button>
-        <button type="button" onClick={() => { onColor('#b8ff3d'); onClose(); }}><b>06</b>Reset accent color<span>●</span></button>
+        <button type="button" onClick={() => { onColor(DEFAULT_COLOR); onClose(); }}><b>05</b>Reset accent color<span>●</span></button>
       </div>
       <div className="command-footer"><span>ESC to close</span><span>Navigate with mouse or keyboard</span></div>
     </div>
@@ -135,16 +131,14 @@ export default function Page() {
   const progressLabel = useRef(null);
   const t = D.en;
   const [primaryColor, setPrimaryColor] = useState(DEFAULT_COLOR);
-  const [theme, setTheme] = useState(DEFAULT_THEME);
   const [hydrated, setHydrated] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   useEffect(() => {
     document.documentElement.lang = 'en';
     document.documentElement.dir = 'ltr';
     const savedColor = window.localStorage.getItem(COLOR_STORAGE_KEY);
-    const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+    window.localStorage.removeItem('omar-portfolio-theme'); // the light theme was retired; drop its saved preference
     if (savedColor && /^#[0-9a-f]{6}$/i.test(savedColor)) setPrimaryColor(savedColor);
-    if (savedTheme === 'light' || savedTheme === 'dark') setTheme(savedTheme);
     setHydrated(true);
   }, []);
 
@@ -152,11 +146,6 @@ export default function Page() {
     document.documentElement.style.setProperty('--primary', primaryColor);
     if (hydrated) window.localStorage.setItem(COLOR_STORAGE_KEY, primaryColor);
   }, [primaryColor, hydrated]);
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    if (hydrated) window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-  }, [theme, hydrated]);
 
   useEffect(() => {
     const key = (event) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); setCommandOpen(v => !v); } if (event.key === 'Escape') setCommandOpen(false); };
@@ -215,20 +204,19 @@ export default function Page() {
     return () => { window.removeEventListener('pointermove', move); document.querySelectorAll('a,button,.magnetic').forEach(el => { el.removeEventListener('pointerenter', over); el.removeEventListener('pointerleave', out); }); };
   }, []);
 
-  const toggleTheme = () => setTheme(v => v === 'light' ? 'dark' : 'light');
-
   return <div ref={root} className="site-shell">
+    <Splash />
     <div className="scroll-progress"><span ref={progress} /><b ref={progressLabel}>OVERVIEW</b></div>
     <div ref={cursor} className="cursor-dot" aria-hidden="true" />
-    <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} onTheme={toggleTheme} onColor={setPrimaryColor} />
+    <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} onColor={setPrimaryColor} />
 
     <aside className="desktop-nav">
-      <a href="#overview" className="nav-reveal brand">O<span>.</span></a><div className="nav-rule" />
+      <a href="#overview" className="nav-reveal brand" aria-label="Omar A. Saeed, back to top"><AtlasMark /></a><div className="nav-rule" />
       <nav>{ids.map((id, i) => <a key={id} href={'#' + id} className="nav-reveal">{String(i + 1).padStart(2, '0')} <span>{t.nav[i]}</span></a>)}</nav>
-      <div className="nav-bottom"><ColorPalette color={primaryColor} onChange={setPrimaryColor} /><ThemeToggle theme={theme} onChange={setTheme} /><span className="vertical-label">AVAILABLE FOR SELECT PROJECTS</span></div>
+      <div className="nav-bottom"><ColorPalette color={primaryColor} onChange={setPrimaryColor} /><span className="vertical-label">AVAILABLE FOR SELECT PROJECTS</span></div>
     </aside>
 
-    <header className="mobile-nav"><a href="#overview" className="brand">O<span>.</span></a><div className="mobile-nav-tools"><ThemeToggle theme={theme} onChange={setTheme} /><ColorPalette color={primaryColor} onChange={setPrimaryColor} /><span className="mobile-status">AVAILABLE FOR SELECT PROJECTS</span></div></header>
+    <header className="mobile-nav"><a href="#overview" className="brand" aria-label="Omar A. Saeed, back to top"><AtlasMark /></a><div className="mobile-nav-tools"><ColorPalette color={primaryColor} onChange={setPrimaryColor} /><span className="mobile-status">AVAILABLE FOR SELECT PROJECTS</span></div></header>
 
     <AtlasStage />
 
@@ -239,9 +227,9 @@ export default function Page() {
 
       <section id="skills" className="section section-pad skills-section"><Reveal><div className="section-heading"><span className="section-number">03</span><div><p className="eyebrow">{t.stackLabel}</p><h2>{t.hs}</h2></div><p className="heading-note">Click a discipline to explore the tools behind my systems.</p></div></Reveal><div className="skills-layout"><div className="skill-statement parallax">{t.skillStatement}</div><InteractiveStack /></div></section>
 
-      <section id="experience" className="section section-pad"><Reveal><div className="section-heading"><span className="section-number">04</span><div><p className="eyebrow">{t.expLabel}</p><h2>{t.hx}</h2></div></div></Reveal><div className="timeline">{t.tl.map(([w,a,b],i)=><Reveal key={a} delay={i*.06}><div className="timeline-item"><span className="timeline-year">{w}</span><div className="timeline-line"><i/></div><div><h3>{a}</h3><p>{b}</p></div></div></Reveal>)}</div></section>
+      <section id="experience" className="section section-pad"><Reveal><div className="section-heading"><span className="section-number">04</span><div><p className="eyebrow">{t.expLabel}</p><h2>{t.hx}</h2></div></div></Reveal><div className="exp-body"><div className="timeline">{t.tl.map(([w,a,b],i)=><Reveal key={a} delay={i*.06}><div className="timeline-item"><span className="timeline-year">{w}</span><div className="timeline-line"><i/></div><div><h3>{a}</h3><p>{b}</p></div></div></Reveal>)}</div><AnubisFigure /></div></section>
 
-      <section id="contact" className="contact section-pad"><div className="contact-orb parallax" /><Reveal><p className="eyebrow">{t.contactLabel}</p><h2>{t.ch}</h2><p className="contact-copy">{t.cs}</p><a className="contact-email magnetic" href="mailto:0omarahmed73@gmail.com"><Magnetic>0omarahmed73@gmail.com <span>↗</span></Magnetic></a><div className="socials"><a href="https://wa.me/201553583288" target="_blank" rel="noreferrer">WhatsApp ↗</a><a href="https://linkedin.com/in/0omarahmed73" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://github.com/0omarahmed73" target="_blank" rel="noreferrer">GitHub ↗</a></div></Reveal><footer><span>© {new Date().getFullYear()} Omar Ahmed Saeed</span><span>CAIRO / EGYPT</span><span>⌘K COMMANDS</span></footer><p className="atlas-credit">Atlas figure: <a href={ATLAS_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas&rdquo; by LastRights93</a>, licensed under <a href={ATLAS_LICENSE} target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Changes: globe and plinth removed, relit, cropped and rendered to an image.</p></section>
+      <section id="contact" className="contact section-pad"><div className="contact-orb parallax" /><Reveal><p className="eyebrow">{t.contactLabel}</p><h2>{t.ch}</h2><p className="contact-copy">{t.cs}</p><a className="contact-email magnetic" href="mailto:0omarahmed73@gmail.com"><Magnetic>0omarahmed73@gmail.com <span>↗</span></Magnetic></a><div className="socials"><a href="https://wa.me/201553583288" target="_blank" rel="noreferrer">WhatsApp ↗</a><a href="https://linkedin.com/in/0omarahmed73" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://github.com/0omarahmed73" target="_blank" rel="noreferrer">GitHub ↗</a></div></Reveal><footer><span>© {new Date().getFullYear()} Omar A. Saeed</span><span>CAIRO / EGYPT</span><span>⌘K COMMANDS</span></footer><p className="atlas-credit">3D model: <a href={ATLAS_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas holding the Earth&rdquo; by Wabbaboy</a>, licensed under <a href={ATLAS_LICENSE} target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Changes: re-lit, re-framed and given a bronze finish. The still-image fallback is a render of <a href={ATLAS_FALLBACK_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas&rdquo; by LastRights93</a> (CC BY 4.0), recoloured to bronze.</p></section>
     </main>
   </div>;
 }

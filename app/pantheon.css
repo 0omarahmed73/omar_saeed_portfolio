@@ -1,0 +1,113 @@
+/* The Digital Pantheon, Atlas Edition: carries the hero's design language through every section below it.
+   Dark-only: midnight navy surfaces, warm off-white text, antique gold accent, Cormorant serif headings, hairline rules and lozenge ornaments.
+   Loaded after globals.css, so it overrides the older acid-green / grotesque styling without touching component markup rules. */
+:root{
+  color-scheme:dark;
+  --bg:#101722;--bg-2:#151E2A;--paper:#E8E0D0;--muted:#A6AFBC;--line:rgba(232,224,208,.12);
+  --primary:#B99A5B;--accent-ink:var(--primary);--panel:#1C2634;--panel-2:#223044;--text-soft:#B9C0CB;--shadow:rgba(0,0,0,.38);
+  --gutter:clamp(20px,5vw,72px);--rule-gold:rgba(201,171,112,.2);
+  --lozenge:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14'%3E%3Cpath d='M14 1.5 L22.5 7 L14 12.5 L5.5 7Z' fill='none' stroke='%23B9975B' stroke-width='1'/%3E%3Cpath d='M0 7H5M23 7H28' stroke='%23B9975B' stroke-width='1'/%3E%3C/svg%3E");
+}
+body{font-family:var(--f-ui),var(--f-body),system-ui,sans-serif;line-height:1.6}
+::selection{background:var(--primary);color:#101722}
+
+/* navigation: the approved Atlas mark replaces the old "O." */
+.desktop-nav{background:rgba(14,20,31,.8);border-right-color:var(--rule-gold)}
+.mobile-nav{background:rgba(14,20,31,.97)}
+.brand{display:inline-flex;line-height:0}
+.brand svg{width:36px;height:36px;display:block;stroke:var(--primary);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .5s}
+.brand:hover svg{transform:rotate(-8deg) scale(1.06)}
+.desktop-nav nav a{font-size:10px;letter-spacing:.1em}
+.nav-rule{background:var(--rule-gold)}
+.vertical-label{color:var(--muted);opacity:.7}
+.command-palette,.color-palette{background:rgba(21,29,43,.97)}
+
+/* shared section language */
+.section-pad{padding-left:calc(96px + var(--gutter));padding-right:var(--gutter)}
+.section-heading{position:relative;grid-template-columns:1fr minmax(180px,300px);padding-top:38px;margin-bottom:56px}
+.section-heading:before{content:"";position:absolute;left:0;top:0;height:14px;width:min(240px,56%);opacity:.75;background:var(--lozenge) repeat-x left center}
+.section-number{grid-column:1/-1;font-family:var(--f-serif),Georgia,serif;font-size:22px;letter-spacing:.02em;text-transform:none;color:var(--accent-ink);margin-bottom:-6px}
+.section-heading>div{grid-column:1}.heading-note{grid-column:2;color:var(--muted)}
+.eyebrow{color:var(--accent-ink);font-size:11px;letter-spacing:.2em}
+.section-heading h2{font-family:var(--f-serif),Georgia,serif;font-weight:500;letter-spacing:-.02em;line-height:.96;font-size:clamp(46px,6.4vw,96px);margin:10px 0 0}
+.skills-section{border-top:1px solid var(--rule-gold);border-bottom:0;background:var(--bg)}
+#experience{background:var(--bg-2);border-top:1px solid var(--rule-gold)}
+.contact{background:var(--bg)}
+
+/* stats: dark navy inscription band under the morning-sky hero. The hero fades to this same navy as you scroll,
+   so the seam is a gold hairline with a small lozenge notch rather than a colour jump. */
+.stats{position:relative;background:var(--bg);color:var(--paper);border-top:1px solid rgba(185,154,91,.5);border-bottom:1px solid var(--rule-gold)}
+.stats:before{content:"";position:absolute;left:50%;top:-8px;width:14px;height:14px;transform:translateX(-50%) rotate(45deg);background:#101722;border:1px solid #B99A5B;z-index:1}
+.stat{border-right-color:var(--rule-gold)}
+.stat strong{font-family:var(--f-serif),Georgia,serif;font-weight:500;letter-spacing:-.02em;font-size:clamp(54px,5.8vw,92px);line-height:.9}
+.stat sup{font-family:var(--f-serif),Georgia,serif;color:var(--accent-ink);font-size:.4em;top:-.9em}
+.stat span:last-child{font-size:11px;letter-spacing:.16em;color:var(--muted)}
+
+/* skills */
+.skill-statement{font-family:var(--f-serif),Georgia,serif;font-weight:500;font-size:clamp(34px,4.3vw,64px);line-height:1.04;letter-spacing:-.01em;color:var(--paper);max-width:600px}
+.skill-statement::first-letter{color:var(--accent-ink);font-style:italic}
+.stack-core{position:relative;isolation:isolate;width:156px;height:156px;border-color:var(--rule-gold);background:radial-gradient(circle,color-mix(in srgb,var(--primary) 14%,var(--bg)),var(--bg) 72%)}
+.stack-core:before{content:"";z-index:-1;position:absolute;left:-46px;right:-46px;top:50%;height:68px;margin-top:-34px;border:1px solid var(--rule-gold);border-radius:50%;transform:rotate(-14deg);pointer-events:none}
+.stack-core strong{font-family:var(--f-serif),Georgia,serif;font-weight:500;font-size:32px;letter-spacing:-.01em}
+.stack-core span,.stack-core small{color:var(--muted);letter-spacing:.2em}
+.stack-node{border-color:var(--rule-gold);background:var(--panel);color:var(--muted);font-size:10px}
+.stack-node:hover,.stack-node.is-active{border-color:var(--primary);color:var(--paper);box-shadow:0 0 28px color-mix(in srgb,var(--primary) 18%,transparent)}
+.stack-details span{border-color:var(--rule-gold);color:var(--text-soft);font-size:11px;padding:7px 12px}
+.stack-details span:hover{color:var(--accent-ink);border-color:var(--primary)}
+
+/* experience */
+.timeline{margin-left:0;max-width:1000px}
+.timeline-item{border-top-color:var(--rule-gold);grid-template-columns:170px 30px 1fr;padding:34px 0}
+.timeline-year{font-family:var(--f-serif),Georgia,serif;font-style:italic;font-size:19px;letter-spacing:0;color:var(--accent-ink)}
+.timeline-line:before{background:var(--rule-gold)}
+.timeline-line i{width:9px;height:9px;border-radius:0;transform:translateX(-50%) rotate(45deg);top:9px;background:var(--bg-2);border:1px solid var(--primary);box-shadow:none}
+.timeline-item h3{font-family:var(--f-serif),Georgia,serif;font-weight:500;font-size:clamp(26px,2.6vw,34px);letter-spacing:-.01em;line-height:1.1}
+.timeline-item p{font-size:15px;color:var(--text-soft)}
+
+/* anubis — guardian of thresholds beside the passage of the timeline */
+.exp-body{display:grid;grid-template-columns:minmax(0,1000px) clamp(220px,21vw,320px);gap:clamp(24px,4vw,64px);align-items:start;justify-content:space-between}
+.anubis-guard{position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:16px;pointer-events:none}
+.anubis-guard svg{width:100%;height:auto;display:block;opacity:.94}
+.anubis-caption{display:flex;align-items:baseline;gap:10px;color:var(--muted);font-size:9px;letter-spacing:.18em}
+.anubis-caption i{font-family:var(--f-serif),Georgia,serif;font-style:italic;font-size:12.5px;letter-spacing:.02em;color:var(--accent-ink)}
+@media (max-width:1180px){
+  .exp-body{grid-template-columns:1fr}
+  .anubis-guard{width:min(46vw,190px);margin:34px auto 0}
+}
+
+/* contact and footer */
+.contact{border-top:1px solid var(--rule-gold)}
+.contact h2{font-family:var(--f-serif),Georgia,serif;font-weight:500;font-size:clamp(52px,8.6vw,128px);line-height:.94;letter-spacing:-.02em;max-width:1000px;margin:20px 0 26px}
+.contact-copy{font-size:17px;color:var(--text-soft);max-width:46ch}
+.contact-email{font-family:var(--f-serif),Georgia,serif;font-weight:500;font-size:clamp(26px,3.8vw,56px);letter-spacing:-.01em;color:var(--paper);border-bottom-color:var(--primary)}
+.contact-email>span{margin-left:0;color:inherit;font-size:1em}.contact-email span span{color:var(--accent-ink);font-size:.62em;margin-left:28px}
+.socials a{font-size:11px;letter-spacing:.16em;color:var(--muted)}.socials a:hover{color:var(--accent-ink)}
+.contact-orb{width:38vw;height:38vw;right:-9vw;top:6%;border:1px solid var(--rule-gold);filter:none;background:radial-gradient(circle at 38% 36%,color-mix(in srgb,var(--primary) 16%,transparent),transparent 62%)}
+.contact-orb:before,.contact-orb:after{content:"";position:absolute;pointer-events:none;border:1px solid var(--rule-gold);border-radius:50%}
+.contact-orb:before{left:-16%;right:-16%;top:50%;height:28%;margin-top:-14%;transform:rotate(-14deg)}
+.contact-orb:after{left:30%;right:30%;top:0;bottom:0}
+.atlas-credit{color:var(--muted)}
+.contact footer,footer{left:calc(96px + var(--gutter));right:var(--gutter);color:var(--muted);opacity:.8;font-size:10px;letter-spacing:.16em;border-top:1px solid var(--rule-gold);padding-top:18px;bottom:28px}
+
+/* cursor and progress follow the accent; keep the progress bar slim and gold */
+.scroll-progress{background:var(--rule-gold)}
+.scroll-progress b{color:var(--paper);border-color:var(--rule-gold);background:rgba(21,29,43,.88)}
+
+@media (max-width:900px){
+  .section-pad{padding-left:var(--gutter);padding-right:var(--gutter)}
+  .section-heading{grid-template-columns:1fr;padding-top:34px;margin-bottom:40px}
+  .section-heading>div,.heading-note{grid-column:1}.heading-note{display:block;max-width:44ch}
+  .section-heading h2{font-size:clamp(40px,12vw,64px)}
+  .stat{padding:26px 14px 26px var(--gutter)}.stat+.stat{padding-left:14px}.stat strong{font-size:clamp(44px,12vw,60px)}.stat span:last-child{font-size:9px;letter-spacing:.1em;line-height:1.5}
+  .timeline-item{grid-template-columns:96px 22px 1fr;gap:12px;padding:26px 0}
+  .timeline-item h3{font-size:24px}.timeline-year{font-size:16px}
+  .contact h2{font-size:clamp(46px,14vw,76px);line-height:.96}
+  .contact-email{font-size:clamp(20px,6.2vw,30px);overflow-wrap:anywhere}.contact-email span span{margin-left:14px}
+  .contact-orb{width:80vw;height:80vw;right:-38vw;top:4%}
+  .contact footer,footer{left:var(--gutter);right:var(--gutter)}footer span:last-child{display:none}
+  .anubis-guard{width:min(42vw,150px);margin:26px auto 0}
+}
+
+/* review: the mobile status line was 8px at about 3:1 contrast */
+.mobile-status{color:var(--muted);font-size:9px}
+.color-picker-label{font-size:9px}.vertical-label{font-size:8px}.stack-core span,.stack-core small{font-size:9px}
