@@ -74,6 +74,17 @@ a{color:inherit}
 .ledger .cell+.cell{padding-left:28px}.ledger .cell:last-child{border-right:0}
 .ledger h3{font-family:var(--serif);font-weight:600;font-size:26px;margin:0 0 8px}
 .ledger p{margin:0;color:var(--muted);max-width:38ch}
+.ledger .lede{max-width:46ch;color:var(--muted);margin:-18px 0 56px;font-size:18px}
+.plates{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.plate{display:grid;grid-template-columns:90px 1.1fr 1fr;gap:clamp(16px,3vw,48px);padding:36px 0;border-bottom:1px solid var(--line);align-items:start}
+.plate .n{font-family:var(--serif);font-size:24px;color:var(--gold)}
+.plate h3{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.2vw,46px);line-height:1.05;margin:0 0 6px}
+.plate .cl{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--muted)}
+.plate p{margin:0 0 14px;max-width:48ch}
+.plate .tg{display:flex;flex-wrap:wrap;gap:8px}
+.plate .tg span{border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;color:var(--muted)}
+.plate b{display:block;font-size:12px;font-weight:600;color:var(--gold);letter-spacing:.04em;margin-bottom:4px}
+@media (max-width:820px){.plate{grid-template-columns:1fr;gap:10px}}
 .proto{background:var(--obsidian);color:#b9b2a2;padding:28px var(--gutter);font-size:13px}
 
 @media (max-width:820px){
@@ -112,34 +123,36 @@ a{color:inherit}
       <!-- PLACEHOLDER Atlas silhouette. To be replaced by a sculpted/licensed 3D model. -->
       <svg viewBox="0 0 400 440" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="mb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdfbf6"/><stop offset=".5" stop-color="#e6dfcf"/><stop offset="1" stop-color="#a99f88"/></linearGradient>
-          <radialGradient id="lit" cx=".22" cy=".25" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient>
-          <radialGradient id="shade" cx=".85" cy=".8" r=".7"><stop offset="0" stop-color="#5a5240" stop-opacity=".45"/><stop offset="1" stop-color="#5a5240" stop-opacity="0"/></radialGradient>
+          <linearGradient id="mb" gradientUnits="userSpaceOnUse" x1="70" y1="0" x2="340" y2="440"><stop offset="0" stop-color="#f7f3ea"/><stop offset=".5" stop-color="#d9d0bb"/><stop offset="1" stop-color="#968c75"/></linearGradient>
+          <radialGradient id="lit" gradientUnits="userSpaceOnUse" cx="100" cy="120" r="320"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="shade" gradientUnits="userSpaceOnUse" cx="350" cy="380" r="300"><stop offset="0" stop-color="#5a5240" stop-opacity=".45"/><stop offset="1" stop-color="#5a5240" stop-opacity="0"/></radialGradient>
           <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset=".72" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
           <mask id="m"><rect width="400" height="440" fill="url(#fade)"/></mask>
         </defs>
         <g mask="url(#m)">
           <g id="fig">
-            <!-- raised arms, cupping the sphere -->
-            <path d="M92 238 C52 190 54 110 92 44 C98 30 108 18 120 16 C134 14 140 28 132 40 C112 76 108 128 134 176 C142 192 150 204 156 214Z"/>
-            <path d="M308 238 C348 190 346 110 308 44 C302 30 292 18 280 16 C266 14 260 28 268 40 C288 76 292 128 266 176 C258 192 250 204 244 214Z"/>
-            <!-- torso -->
-            <path d="M34 440 C38 336 62 268 124 232 C152 216 172 210 174 198 L226 198 C228 210 248 216 276 232 C338 268 362 336 366 440Z"/>
-            <!-- neck + bowed head -->
-            <path d="M176 168 L224 168 L230 212 C214 224 186 224 170 212Z"/>
-            <path d="M200 100 C236 100 246 132 238 156 C230 182 214 192 200 192 C184 192 170 182 164 158 C158 132 168 100 200 100Z"/>
-            <!-- hair curls -->
-            <path d="M166 128 C160 100 184 88 204 92 C230 90 246 108 238 134 C232 118 220 112 204 112 C186 112 174 118 166 128Z" fill="#cfc6b0"/>
+            <path id="arm" d="M142 222 C112 210 86 214 62 222 L90 74 C93 56 100 42 114 30 C104 24 88 22 76 29 C62 38 54 54 50 74 L26 220 C20 240 28 258 46 260 C82 268 114 278 144 290Z"/>
+            <use href="#arm" transform="matrix(-1 0 0 1 400 0)"/>
+            <path d="M34 440 C36 338 62 270 122 236 C150 220 172 214 174 200 L226 200 C228 214 250 220 278 236 C338 270 364 338 366 440Z"/>
+            <circle cx="132" cy="246" r="34"/><circle cx="268" cy="246" r="34"/>
+            <path d="M174 168 L226 168 L232 214 C216 226 184 226 168 214Z"/>
+            <path d="M200 98 C238 98 248 130 240 156 C232 184 216 196 200 196 C184 196 168 184 160 156 C152 130 162 98 200 98Z"/>
+            <path d="M158 132 C152 98 178 84 204 88 C232 86 250 106 242 134 C238 118 224 108 204 108 C184 108 168 114 158 132Z" fill="#cfc6b0"/>
+            <path d="M162 150 C164 188 184 204 200 204 C216 204 236 188 238 150 C230 168 218 172 200 172 C182 172 170 168 162 150Z" fill="#d6cdb8"/>
           </g>
-          <use href="#fig" fill="url(#mb)"/>
-          <use href="#fig" fill="url(#lit)"/>
-          <use href="#fig" fill="url(#shade)"/>
+          <mask id="figm"><use href="#fig" fill="#fff"/></mask>
+          <g mask="url(#figm)"><rect width="400" height="440" fill="url(#mb)"/><rect width="400" height="440" fill="url(#lit)"/><rect width="400" height="440" fill="url(#shade)"/></g>
           <!-- carved anatomy -->
-          <g fill="none" stroke="#7a6f58" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round">
-            <path d="M174 206 C150 214 120 236 100 266"/><path d="M226 206 C250 214 280 236 300 266"/>
-            <path d="M200 232 L200 300"/><path d="M130 290 C160 310 180 306 200 300 C220 306 240 310 270 290"/>
-            <path d="M118 120 C108 90 116 56 128 36"/><path d="M282 120 C292 90 284 56 272 36"/>
-            <path d="M186 150 C192 156 208 156 214 150"/>
+          <g fill="none" stroke="#7a6f58" stroke-opacity=".4" stroke-width="1.4" stroke-linecap="round">
+            <path d="M174 214 C150 222 126 244 108 278"/><path d="M226 214 C250 222 274 244 292 278"/>
+            <path d="M200 236 L200 316"/><path d="M128 300 C160 322 182 318 200 312 C218 318 240 322 272 300"/>
+            <path d="M184 150 C190 146 196 148 198 152"/><path d="M216 150 C210 146 204 148 202 152"/>
+            <path d="M200 152 L197 168 C199 170 201 170 203 168"/>
+            <path d="M178 182 C190 188 210 188 222 182"/>
+            <path d="M174 140 C180 134 190 134 196 138"/><path d="M226 140 C220 134 210 134 204 138"/>
+            <path d="M58 90 C62 130 56 170 44 214"/><path d="M342 90 C338 130 344 170 356 214"/>
+            <path d="M76 36 C82 44 86 54 86 66M96 32 C100 42 102 52 100 62" stroke-width="1"/>
+            <path d="M324 36 C318 44 314 54 314 66M304 32 C300 42 298 52 300 62" stroke-width="1"/>
           </g>
           <!-- gold rim light, upper left -->
           <g fill="none" stroke="#B9975B" stroke-width="1.6" stroke-linecap="round" stroke-opacity=".85">
@@ -169,13 +182,10 @@ a{color:inherit}
   </section>
 </div>
 
-<section class="ledger" id="stack">
-  <h2>Why the sphere is not just decoration.</h2>
-  <div class="row">
-    <div class="cell"><h3>Navigation</h3><p>Each project is a star on the sphere. Scroll or pick one and the globe turns to it.</p></div>
-    <div class="cell"><h3>Proof</h3><p>The sphere is drawn live, and it is the same code family as the Three.js network already on your site.</p></div>
-    <div class="cell"><h3>A fallback</h3><p>Without motion or WebGL, this section is a plain ivory list of the same four case studies.</p></div>
-  </div>
+<section class="ledger" id="work" aria-label="All projects">
+  <h2>Selected work, in plain sight.</h2>
+  <p class="lede">The same case studies as the night sky, readable without scrolling through it.</p>
+  <ol class="plates" id="plates"></ol>
 </section>
 <div class="proto">Prototype only. Copy for "Engineering" lines is draft, built from your existing project descriptions. Replace with real detail before launch.</div>
 </main>
@@ -198,6 +208,8 @@ const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const sm=(a,b,x)=>{x=clamp((x-a)/(b-a));return x*x*(3-2*x)};
 
+
+$('plates').innerHTML=projects.map(p=>`<li class="plate"><span class="n">${p.n}</span><div><h3>${p.t}</h3><div class="cl">${p.c}</div></div><div><p>${p.r}</p><p><b>Engineering</b>${p.e}</p><div class="tg">${p.tags.map(x=>`<span>${x}</span>`).join('')}</div></div></li>`).join('');
 rail.innerHTML=projects.map((p,i)=>`<button data-i="${i}"><span>${p.t.split(' ')[0]}</span><i></i></button>`).join('');
 rail.querySelectorAll('button').forEach(b=>b.onclick=()=>{
   const i=+b.dataset.i, top=track.offsetTop, h=track.offsetHeight-innerHeight;
