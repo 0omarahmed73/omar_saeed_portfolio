@@ -1,8 +1,8 @@
 /* Atlas redesign, Phase 1: hero, ivory-to-night featured sequence, and the plain project list.
    All rules are scoped under .at-scope so the existing sections keep their own styles. */
 .at-scope{
-  --at-papyrus:#F3EFE5; --at-obsidian:#101725; --at-gold:#B9975B;
-  --at-fg:#1a1f2c; --at-muted:#5b5f6b; --at-line:rgba(26,31,44,.16);
+  --at-papyrus:#101722; --at-obsidian:#101722; --at-gold:#B9975B;
+  --at-fg:#E8E0D0; --at-muted:#A7ADB8; --at-line:rgba(232,224,208,.14); --at-link:#CDB27A;
   --at-gutter:clamp(20px,5vw,72px);
   font-family:var(--f-ui),system-ui,sans-serif; line-height:1.6; color:var(--at-fg);
 }
@@ -10,22 +10,31 @@
 .at-scope h1,.at-scope h2,.at-scope h3{font-family:var(--f-serif),Georgia,serif;font-weight:500;margin:0}
 
 /* pinned stage: the track is tall, the stage sticks to the viewport while you scroll through it */
-.at-track{position:relative;height:340vh;margin-left:96px;background:var(--at-papyrus)}
-.at-stage{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--at-papyrus);color:var(--at-fg)}
+.at-track{position:relative;height:340vh;margin-left:96px;background:#101722}
+.at-stage{position:sticky;top:0;height:100vh;overflow:hidden;background:#547F9F;color:var(--at-fg)}
+/* hero copy sits on a medium morning blue: warm off-white heading, pale blue-gray body, gold lightened just enough to read on blue.
+   The night panels and the project list keep the default light-on-dark tokens. */
+.at-hero,.at-cue,.at-credit{--at-fg:#F0E9DC;--at-muted:#E4EDF3;--at-papyrus:#101722;--at-gold:#D9BD7F;color:var(--at-fg)}
 .at-canvas{position:absolute;inset:0;width:100%;height:100%}
+/* One rotation group for the statue and its armillary: both children of .at-sculpt-in share a single
+   perspective + transform, so the instrument can never drift out of Atlas's hands. */
+.at-sculpt{position:absolute;inset:0;perspective:1400px;pointer-events:none}
+.at-sculpt-in{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;transform-origin:71% 68%}
 .at-orrery-fallback{position:absolute;width:min(40vh,34vw);aspect-ratio:1;right:calc(var(--at-gutter) + 8%);top:6%;border:1px solid rgba(185,151,91,.5);border-radius:50%;box-shadow:inset 0 0 0 1px rgba(185,151,91,.15)}
-.at-atlas{position:absolute;right:calc(var(--at-gutter) + 4vw);bottom:-2vh;width:min(38%,520px);will-change:transform,opacity}
+.at-atlas{opacity:0;position:absolute;right:calc(var(--at-gutter) + 4vw);bottom:-2vh;width:min(38%,520px);will-change:transform,opacity}
 .at-atlas svg,.at-atlas img{width:100%;height:auto;display:block}
 .at-figure{display:block;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
-.at-atlas:before{content:"";position:absolute;inset:6% -12% -4%;background:radial-gradient(ellipse at 50% 55%,rgba(185,151,91,.16),rgba(185,151,91,0) 62%);z-index:-1}
+.at-atlas:before{content:"";position:absolute;inset:6% -12% -4%;background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.14),rgba(255,255,255,0) 62%);z-index:-1}
 
 .at-hero{position:absolute;left:var(--at-gutter);top:50%;transform:translateY(-50%);max-width:min(860px,60%);will-change:opacity,transform}
 .at-hero h1{font-size:clamp(52px,6.6vw,104px);line-height:.94;letter-spacing:-.02em;margin:0 0 28px}
-.at-hero h1 em{font-style:italic;color:var(--at-gold)}
+.at-hero h1 em{font-style:italic;color:#E8CF96}
 .at-hero p{max-width:44ch;font-size:18px;color:var(--at-muted);margin:0 0 34px}
 .at-cta{display:flex;gap:14px;flex-wrap:wrap}
 .at-btn{display:inline-flex;align-items:center;min-height:48px;padding:0 26px;border-radius:999px;font-weight:500;font-size:15px;border:1px solid var(--at-fg);background:var(--at-fg);color:var(--at-papyrus)}
-.at-btn.at-ghost{background:transparent;color:var(--at-fg)}
+.at-btn.at-ghost{background:transparent;color:var(--at-fg);border-color:rgba(240,233,220,.6)}
+.at-btn:hover{border-color:var(--at-gold)}
+.at-panel .at-btn,.at-list .at-btn{--at-fg:#E8E0D0}
 .at-cue{position:absolute;left:var(--at-gutter);bottom:28px;font-size:13px;color:var(--at-muted);display:flex;gap:12px;align-items:center}
 .at-cue i{display:block;width:40px;height:1px;background:var(--at-gold)}
 .at-skip{position:absolute;left:var(--at-gutter);top:-80px;z-index:30;background:var(--at-fg);color:var(--at-papyrus);padding:10px 16px;border-radius:999px;font-size:14px}
@@ -55,14 +64,14 @@
 .at-filters button{font:inherit;font-size:14px;background:none;color:var(--at-fg);border:1px solid var(--at-line);border-radius:999px;padding:0 16px;min-height:44px;cursor:pointer}
 .at-filters button[aria-pressed="true"]{background:var(--at-fg);color:var(--at-papyrus);border-color:var(--at-fg)}
 .at-plates{list-style:none;margin:0;padding:0;border-top:1px solid var(--at-line)}
-.at-plate{display:grid;grid-template-columns:90px 1.1fr 1fr;gap:clamp(16px,3vw,48px);padding:36px 0;border-bottom:1px solid var(--at-line);align-items:start}
+.at-plate{display:grid;grid-template-columns:90px 1.1fr 1fr;gap:clamp(16px,3vw,48px);padding:36px var(--at-gutter);margin:0 calc(var(--at-gutter) * -1);border-bottom:1px solid var(--at-line);align-items:start}
 .at-n{font-family:var(--f-serif),Georgia,serif;font-size:22px;color:var(--at-gold)}
 .at-plate h3{font-size:clamp(28px,3.2vw,46px);line-height:1.05;margin:0 0 6px}
 .at-cl{font-family:var(--f-serif),Georgia,serif;font-style:italic;font-size:19px;color:var(--at-muted)}
 .at-plate p{margin:0 0 14px;max-width:48ch}
 .at-tg{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .at-tg li{border:1px solid var(--at-line);border-radius:999px;padding:3px 12px;font-size:13px;color:var(--at-muted)}
-.at-live{display:inline-block;margin:14px 22px 0 0;font-size:15px;font-weight:500;color:#8a6b2f;border-bottom:1px solid currentColor;padding-bottom:2px}
+.at-live{display:inline-block;margin:14px 22px 0 0;font-size:15px;font-weight:500;color:var(--at-link);border-bottom:1px solid currentColor;padding-bottom:2px}
 .at-panel .at-live{color:var(--at-gold);margin:0;pointer-events:auto}
 .at-count{margin:24px 0 0;font-size:14px;color:var(--at-muted)}
 
@@ -95,12 +104,14 @@
 .at-grid{inset:0;opacity:0;background-image:linear-gradient(rgba(239,233,218,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(239,233,218,.04) 1px,transparent 1px);background-size:72px 72px;-webkit-mask-image:radial-gradient(ellipse 60% 70% at 62% 48%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 60% 70% at 62% 48%,#000 20%,transparent 75%)}
 .at-niche{top:9vh;bottom:0;width:calc(min(38%,520px)*1.25);right:calc(var(--at-gutter) + 4vw - min(38%,520px)*.125);will-change:opacity}
 .at-band{height:14px;width:min(360px,70%);margin:0 0 28px;opacity:.7;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14'%3E%3Cpath d='M14 1.5 L22.5 7 L14 12.5 L5.5 7Z' fill='none' stroke='%23B9975B' stroke-width='1'/%3E%3Cpath d='M0 7H5M23 7H28' stroke='%23B9975B' stroke-width='1'/%3E%3C/svg%3E") repeat-x left center}
-.at-list{position:relative;background:#EFE9D8}
+.at-list{--fade:clamp(56px,8vw,120px);position:relative;background:linear-gradient(#151E2A calc(100% - var(--fade)),#101722)}
 .at-list:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .46  0 0 0 0 .3  0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .at-list>*{position:relative}
 .at-plate{transition:background .3s}
-.at-plate:hover{background:linear-gradient(90deg,rgba(216,199,162,.2),transparent 70%)}
-.at-filters button[aria-pressed="true"]{background:#2a2418;border-color:#2a2418}
+/* full-bleed row: the tint reaches both edges of the section instead of fading out at 70% */
+.at-plate{position:relative}
+.at-plate:hover,.at-plate:focus-within{background:rgba(185,154,91,.075)}
+.at-plate:hover:after,.at-plate:focus-within:after{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--at-gold)}
 
 /* attribution: hero note (desktop, fades on scroll) and the persistent footer line */
 .at-credit{position:absolute;left:var(--at-gutter);bottom:64px;margin:0;font-size:11px;line-height:1.4;color:var(--at-muted);max-width:min(52ch,46%)}
@@ -110,3 +121,21 @@
 @media (max-width:600px){.at-atlas{width:60%;right:1%;bottom:-3vh}.at-cue{max-width:46%}}
 @media (max-width:380px){.at-atlas{width:56%}}
 @media (max-width:900px){.at-skip:focus{top:96px}.at-niche,.at-grain,.at-credit{display:none}.at-list:before{display:none}.at-skyarc{height:30vh}}
+
+/* cinematic hero lighting: a soft blue-gray pool behind Atlas that fades as the sky turns to night */
+/* morning-blue atmosphere. Layers, top to bottom: faint edge shading; a soft navy fade at the very bottom that leads into the dark Stats band;
+   deeper steel blue pooling low-left; a broad, off-centre lighter patch (#7198B2) behind Atlas plus a thin haze up-right so it reads as sky, not a spotlight;
+   and a slightly tilted vertical base from #5D84A1 (upper, about 7% softer than before) to #456A86. Everything fades as the sky turns to night. Stops under the copy stay deep enough for ~4.5:1 text contrast. */
+.at-glow{position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(ellipse 135% 125% at 46% 46%,rgba(17,27,40,0) 56%,rgba(17,27,40,.15) 100%),
+  linear-gradient(180deg,rgba(16,23,34,0) 70%,rgba(16,23,34,.1) 84%,rgba(16,23,34,.26) 94%,rgba(16,23,34,.5) 100%),
+  radial-gradient(ellipse 62% 48% at 16% 104%,rgba(52,92,124,.55) 0,rgba(52,92,124,0) 100%),
+  radial-gradient(ellipse 40% 36% at 82% 18%,rgba(117,155,178,.4) 0,rgba(117,155,178,0) 100%),
+  radial-gradient(ellipse 58% 76% at 71% 48%,rgba(107,144,169,.9) 0,rgba(107,144,169,.38) 48%,rgba(107,144,169,0) 100%),
+  linear-gradient(172deg,#5D84A1 0%,#58819E 20%,#4C7694 40%,#45708E 58%,#456A86 100%)}
+@media (max-width:900px){.at-glow{background:
+  radial-gradient(ellipse 135% 125% at 46% 46%,rgba(17,27,40,0) 56%,rgba(17,27,40,.15) 100%),
+  linear-gradient(180deg,rgba(16,23,34,0) 72%,rgba(16,23,34,.1) 86%,rgba(16,23,34,.26) 95%,rgba(16,23,34,.5) 100%),
+  radial-gradient(ellipse 90% 30% at 10% 98%,rgba(52,92,124,.5) 0,rgba(52,92,124,0) 100%),
+  radial-gradient(ellipse 110% 46% at 68% 80%,rgba(107,144,169,.85) 0,rgba(107,144,169,.34) 50%,rgba(107,144,169,0) 100%),
+  linear-gradient(176deg,#5D84A1 0%,#56809D 12%,#4A7493 28%,#45708E 40%,#456A86 100%)}}
