@@ -10,6 +10,7 @@ export default function ProjectList() {
   const rows = D.en.projects.filter(p => filter === 'All' || p[5] === filter);
   return (
     <section id="projects" className="at-list at-scope" aria-labelledby="at-list-title">
+      <div className="at-band" aria-hidden="true" />
       <h2 id="at-list-title">{atlas.listTitle}</h2>
       <p className="at-lede">{atlas.listNote}</p>
       <div className="at-filters" role="group" aria-label="Filter projects by category">

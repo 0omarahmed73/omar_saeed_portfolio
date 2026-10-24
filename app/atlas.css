@@ -15,7 +15,8 @@
 .at-canvas{position:absolute;inset:0;width:100%;height:100%}
 .at-orrery-fallback{position:absolute;width:min(40vh,34vw);aspect-ratio:1;right:calc(var(--at-gutter) + 8%);top:6%;border:1px solid rgba(185,151,91,.5);border-radius:50%;box-shadow:inset 0 0 0 1px rgba(185,151,91,.15)}
 .at-atlas{position:absolute;right:calc(var(--at-gutter) + 4vw);bottom:-2vh;width:min(38%,520px);will-change:transform,opacity}
-.at-atlas svg{width:100%;height:auto;display:block}
+.at-atlas svg,.at-atlas img{width:100%;height:auto;display:block}
+.at-figure{display:block;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
 .at-atlas:before{content:"";position:absolute;inset:6% -12% -4%;background:radial-gradient(ellipse at 50% 55%,rgba(185,151,91,.16),rgba(185,151,91,0) 62%);z-index:-1}
 
 .at-hero{position:absolute;left:var(--at-gutter);top:50%;transform:translateY(-50%);max-width:min(860px,60%);will-change:opacity,transform}
@@ -76,7 +77,7 @@
   .at-atlas{width:56%;right:-4%;bottom:-4vh}
   .at-panel{top:auto;bottom:0;transform:none;width:auto;left:0;right:0;padding:56px var(--at-gutter) 5vh;background:linear-gradient(to bottom,rgba(16,23,37,0),rgba(16,23,37,.94) 38%)}
   .at-panel h2{font-size:38px}.at-role{font-size:15px}
-  .at-rail{top:calc(80px + 3vh);transform:none;flex-direction:row;right:var(--at-gutter);left:var(--at-gutter);justify-content:space-between}
+  .at-rail{top:126px;transform:none;flex-direction:row;right:var(--at-gutter);left:var(--at-gutter);justify-content:space-between}
   .at-rail a span{display:none}
   .at-plate{grid-template-columns:1fr;gap:10px}
 }
@@ -85,3 +86,27 @@
   .at-stage{position:relative;height:100vh}
   .at-panel,.at-rail{display:none}
 }
+
+/* Egyptian x Hellenic hybrid layer: pylon niche, night-sky arch, technical grid, limestone grain, lozenge band */
+.at-grain,.at-skyarc,.at-grid,.at-niche{position:absolute;pointer-events:none}
+.at-grain{inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .46  0 0 0 0 .3  0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.at-skyarc{left:0;right:0;top:0;height:46vh;opacity:0}
+.at-skyarc svg,.at-niche svg{width:100%;height:100%;display:block}
+.at-grid{inset:0;opacity:0;background-image:linear-gradient(rgba(239,233,218,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(239,233,218,.04) 1px,transparent 1px);background-size:72px 72px;-webkit-mask-image:radial-gradient(ellipse 60% 70% at 62% 48%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 60% 70% at 62% 48%,#000 20%,transparent 75%)}
+.at-niche{top:9vh;bottom:0;width:calc(min(38%,520px)*1.25);right:calc(var(--at-gutter) + 4vw - min(38%,520px)*.125);will-change:opacity}
+.at-band{height:14px;width:min(360px,70%);margin:0 0 28px;opacity:.7;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14'%3E%3Cpath d='M14 1.5 L22.5 7 L14 12.5 L5.5 7Z' fill='none' stroke='%23B9975B' stroke-width='1'/%3E%3Cpath d='M0 7H5M23 7H28' stroke='%23B9975B' stroke-width='1'/%3E%3C/svg%3E") repeat-x left center}
+.at-list{position:relative;background:#EFE9D8}
+.at-list:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .46  0 0 0 0 .3  0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.at-list>*{position:relative}
+.at-plate{transition:background .3s}
+.at-plate:hover{background:linear-gradient(90deg,rgba(216,199,162,.2),transparent 70%)}
+.at-filters button[aria-pressed="true"]{background:#2a2418;border-color:#2a2418}
+
+/* attribution: hero note (desktop, fades on scroll) and the persistent footer line */
+.at-credit{position:absolute;left:var(--at-gutter);bottom:64px;margin:0;font-size:11px;line-height:1.4;color:var(--at-muted);max-width:min(52ch,46%)}
+.at-credit a,.atlas-credit a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.at-credit a:focus-visible,.atlas-credit a:focus-visible{outline:2px solid var(--at-gold);outline-offset:3px}
+.atlas-credit{margin:28px 0 0;font-size:12px;line-height:1.5;color:var(--muted);max-width:70ch}
+@media (max-width:600px){.at-atlas{width:60%;right:1%;bottom:-3vh}.at-cue{max-width:46%}}
+@media (max-width:380px){.at-atlas{width:56%}}
+@media (max-width:900px){.at-skip:focus{top:96px}.at-niche,.at-grain,.at-credit{display:none}.at-list:before{display:none}.at-skyarc{height:30vh}}

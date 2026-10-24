@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import AtlasFigure from './AtlasFigure';
-import { D, atlas } from '@/lib/data';
+import { D, atlas, ATLAS_SOURCE, ATLAS_LICENSE } from '@/lib/data';
 import '@/app/atlas.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -19,6 +19,8 @@ const Orrery = dynamic(() => import('./Orrery'), {
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const smooth = (a, b, x) => { x = clamp((x - a) / (b - a)); return x * x * (3 - 2 * x); };
+// decan-style ticks along the night-sky arch
+const ARCH_DOTS = [[42, 236, 2], [118, 183, 1.3], [204, 142, 2], [299, 113, 1.3], [398, 96, 2], [500, 90, 1.3], [602, 96, 2], [701, 113, 1.3], [796, 142, 2], [882, 183, 1.3], [958, 236, 2]];
 const PAPYRUS = [243, 239, 229], OBSIDIAN = [16, 23, 37];
 const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
 
@@ -30,6 +32,7 @@ export default function AtlasStage() {
   const atlasRef = useRef(null);
   const panelRef = useRef(null);
   const railRef = useRef(null);
+  const layers = { grain: useRef(null), arc: useRef(null), grid: useRef(null), niche: useRef(null), credit: useRef(null) };
   const stateRef = useRef({ p: 0, active: 0 });
   const [active, setActive] = useState(0);
 
@@ -57,6 +60,10 @@ export default function AtlasStage() {
       hero.style.pointerEvents = out > .7 ? 'none' : 'auto';
       hero.style.visibility = out >= 1 ? 'hidden' : 'visible';
       cue.style.opacity = 1 - smooth(0, .06, p);
+      layers.niche.current.style.opacity = 1 - smooth(.08, .22, p);
+      layers.credit.current.style.opacity = 1 - smooth(.02, .1, p);
+      layers.arc.current.style.opacity = night; layers.grid.current.style.opacity = night;
+      layers.grain.current.style.opacity = (1 - night * .6).toFixed(2);
       figure.style.opacity = 1 - smooth(.08, .22, p);
       figure.style.transform = `translateY(${smooth(.1, .3, p) * 18}vh) scale(${1 + smooth(0, .3, p) * .06})`;
       const show = smooth(.22, .3, p) * (1 - smooth(.97, 1, p));
@@ -87,8 +94,16 @@ export default function AtlasStage() {
     <section id="overview" ref={trackRef} className="at-track at-scope" aria-label="Introduction and featured work">
       <div ref={stageRef} className="at-stage">
         <a className="at-skip" href="#projects">Skip to all projects</a>
+        <div ref={layers.grain} className="at-grain" aria-hidden="true" />
+        <div ref={layers.arc} className="at-skyarc" aria-hidden="true">
+          <svg viewBox="0 0 1000 300" preserveAspectRatio="none"><path d="M-20 300 C200 20 800 20 1020 300" fill="none" stroke="#B9975B" strokeOpacity=".26" strokeWidth="1" vectorEffect="non-scaling-stroke" />{ARCH_DOTS.map(([x, y, r]) => <circle key={x} cx={x} cy={y} r={r} fill="#B9975B" fillOpacity=".75" />)}</svg>
+        </div>
+        <div ref={layers.grid} className="at-grid" aria-hidden="true" />
         <Orrery stateRef={stateRef} atlasRef={atlasRef} featured={featured} />
 
+        <div ref={layers.niche} className="at-niche" aria-hidden="true">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none"><g fill="none" strokeLinecap="round"><path d="M5 100 L12 26 M95 100 L88 26" stroke="#967a46" strokeOpacity=".26" strokeWidth="1" vectorEffect="non-scaling-stroke" /><path d="M9 26 C28 13 72 13 91 26" stroke="#B9975B" strokeOpacity=".45" strokeWidth="1" vectorEffect="non-scaling-stroke" /></g></svg>
+        </div>
         <div ref={atlasRef} className="at-atlas"><AtlasFigure /></div>
 
         <div ref={heroRef} className="at-hero">
@@ -100,6 +115,7 @@ export default function AtlasStage() {
           </div>
         </div>
         <div ref={cueRef} className="at-cue"><i />{atlas.cue}</div>
+        <p ref={layers.credit} className="at-credit">Atlas render: <a href={ATLAS_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas&rdquo; by LastRights93</a>, <a href={ATLAS_LICENSE} target="_blank" rel="noopener noreferrer">CC BY 4.0</a>.</p>
 
         <article ref={panelRef} className="at-panel" aria-live="polite" aria-label="Featured project">
           <div className="at-idx"><span>{f.n}</span><i /><span>{f.category}</span></div>

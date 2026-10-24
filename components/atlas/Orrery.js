@@ -55,7 +55,7 @@ export default function Orrery({ stateRef, atlasRef, featured }) {
       const R = Rh + (Rn - Rh) * (1 - h);
       const atlas = atlasRef.current;
       const hx = atlas ? atlas.offsetLeft + atlas.offsetWidth / 2 : W * .7;
-      const hy = atlas ? atlas.offsetTop + atlas.offsetHeight * .045 : H * .6;
+      const hy = atlas ? atlas.offsetTop + atlas.offsetHeight * .17 : H * .6;
       const cxH = hx, cyH = hy - Rh * .88;
       const cxN = W * (mobile ? .5 : .65), cyN = H * (mobile ? .33 : .46);
       const cx = cxH + (cxN - cxH) * (1 - h), cy = cyH + (cyN - cyH) * (1 - h);

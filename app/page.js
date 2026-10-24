@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import AtlasStage from '@/components/atlas/AtlasStage';
 import ProjectList from '@/components/atlas/ProjectList';
-import { D, skills } from '@/lib/data';
+import { D, skills, ATLAS_SOURCE, ATLAS_LICENSE } from '@/lib/data';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -241,7 +241,7 @@ export default function Page() {
 
       <section id="experience" className="section section-pad"><Reveal><div className="section-heading"><span className="section-number">04</span><div><p className="eyebrow">{t.expLabel}</p><h2>{t.hx}</h2></div></div></Reveal><div className="timeline">{t.tl.map(([w,a,b],i)=><Reveal key={a} delay={i*.06}><div className="timeline-item"><span className="timeline-year">{w}</span><div className="timeline-line"><i/></div><div><h3>{a}</h3><p>{b}</p></div></div></Reveal>)}</div></section>
 
-      <section id="contact" className="contact section-pad"><div className="contact-orb parallax" /><Reveal><p className="eyebrow">{t.contactLabel}</p><h2>{t.ch}</h2><p className="contact-copy">{t.cs}</p><a className="contact-email magnetic" href="mailto:0omarahmed73@gmail.com"><Magnetic>0omarahmed73@gmail.com <span>↗</span></Magnetic></a><div className="socials"><a href="https://wa.me/201553583288" target="_blank" rel="noreferrer">WhatsApp ↗</a><a href="https://linkedin.com/in/0omarahmed73" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://github.com/0omarahmed73" target="_blank" rel="noreferrer">GitHub ↗</a></div></Reveal><footer><span>© {new Date().getFullYear()} Omar Ahmed Saeed</span><span>CAIRO / EGYPT</span><span>⌘K COMMANDS</span></footer></section>
+      <section id="contact" className="contact section-pad"><div className="contact-orb parallax" /><Reveal><p className="eyebrow">{t.contactLabel}</p><h2>{t.ch}</h2><p className="contact-copy">{t.cs}</p><a className="contact-email magnetic" href="mailto:0omarahmed73@gmail.com"><Magnetic>0omarahmed73@gmail.com <span>↗</span></Magnetic></a><div className="socials"><a href="https://wa.me/201553583288" target="_blank" rel="noreferrer">WhatsApp ↗</a><a href="https://linkedin.com/in/0omarahmed73" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://github.com/0omarahmed73" target="_blank" rel="noreferrer">GitHub ↗</a></div></Reveal><footer><span>© {new Date().getFullYear()} Omar Ahmed Saeed</span><span>CAIRO / EGYPT</span><span>⌘K COMMANDS</span></footer><p className="atlas-credit">Atlas figure: <a href={ATLAS_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas&rdquo; by LastRights93</a>, licensed under <a href={ATLAS_LICENSE} target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Changes: globe and plinth removed, relit, cropped and rendered to an image.</p></section>
     </main>
   </div>;
 }
