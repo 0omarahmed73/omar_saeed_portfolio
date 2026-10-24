@@ -31,7 +31,7 @@ a{color:inherit}
 .cv{border:1px solid currentColor;border-radius:999px;padding:9px 18px;font-size:14px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 
 /* pinned stage */
-.stage-track{height:520vh;position:relative}
+.stage-track{height:340vh;position:relative}
 .stage{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--bg);color:var(--fg)}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%}
 .atlas{position:absolute;right:calc(var(--gutter) + 4vw);bottom:-2vh;width:min(38vw,520px);will-change:transform,opacity}
@@ -77,7 +77,7 @@ a{color:inherit}
 .ledger .lede{max-width:46ch;color:var(--muted);margin:-18px 0 56px;font-size:18px}
 .plates{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
 .plate{display:grid;grid-template-columns:90px 1.1fr 1fr;gap:clamp(16px,3vw,48px);padding:36px 0;border-bottom:1px solid var(--line);align-items:start}
-.plate .n{font-family:var(--serif);font-size:24px;color:var(--gold)}
+.plate .n{font-family:var(--serif);font-size:22px;color:var(--gold)}
 .plate h3{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.2vw,46px);line-height:1.05;margin:0 0 6px}
 .plate .cl{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--muted)}
 .plate p{margin:0 0 14px;max-width:48ch}
@@ -85,12 +85,27 @@ a{color:inherit}
 .plate .tg span{border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;color:var(--muted)}
 .plate b{display:block;font-size:12px;font-weight:600;color:var(--gold);letter-spacing:.04em;margin-bottom:4px}
 @media (max-width:820px){.plate{grid-template-columns:1fr;gap:10px}}
+.live{display:inline-block;margin-top:14px;font-size:15px;font-weight:500;color:var(--gold);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px}
+.panel .live{pointer-events:auto}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px}
+.filters button{font:inherit;font-size:14px;background:none;color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:0 16px;min-height:44px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--fg);color:var(--papyrus);border-color:var(--fg)}
+.skip{position:absolute;left:var(--gutter);top:-80px;z-index:30;background:var(--fg);color:var(--papyrus);padding:10px 16px;border-radius:999px;font-size:14px;text-decoration:none;}
+.skip:focus{top:76px}
+.atlas::before{content:"";position:absolute;inset:6% -12% -4%;background:radial-gradient(ellipse at 50% 55%,rgba(185,151,91,.16),rgba(185,151,91,0) 62%);z-index:-1}
+.panel{pointer-events:none}
+@media (prefers-reduced-motion:reduce){
+  .stage-track{height:auto}
+  .stage{position:relative;height:100vh}
+  .panel,.rail{display:none}
+}
 .proto{background:var(--obsidian);color:#b9b2a2;padding:28px var(--gutter);font-size:13px}
 
+@media (min-width:821px) and (max-width:1100px){.hero-copy{max-width:46vw}.hero-copy h1{font-size:clamp(44px,6vw,68px)}.rail button span{display:none}}
 @media (max-width:820px){
   br.d{display:none}
   .nav ul{display:none}
-  .stage-track{height:560vh}
+  .stage-track{height:400vh}
   .hero-copy{top:18vh;transform:none;max-width:none;right:var(--gutter)}
   .hero-copy h1{font-size:clamp(46px,13vw,72px)}
   .hero-copy p{font-size:16px}
@@ -103,7 +118,7 @@ a{color:inherit}
   .ledger .row{grid-template-columns:1fr}
   .ledger .cell,.ledger .cell+.cell{padding:22px 0;border-right:0;border-bottom:1px solid var(--line)}
 }
-@media (prefers-reduced-motion:reduce){ .stage canvas{opacity:.9} }
+
 </style>
 </head>
 <body>
@@ -117,6 +132,7 @@ a{color:inherit}
 <main id="top">
 <div class="stage-track" id="track">
   <section class="stage" id="stage" aria-label="Introduction and selected work">
+    <a class="skip" href="#work">Skip to all projects</a>
     <canvas id="orrery" aria-hidden="true"></canvas>
 
     <div class="atlas" id="atlas" aria-hidden="true">
@@ -175,8 +191,8 @@ a{color:inherit}
       <h2 id="pTitle"></h2>
       <div class="client" id="pClient"></div>
       <p class="role" id="pRole"></p>
-      <div class="eng"><b>Engineering</b><span id="pEng"></span></div>
       <div class="tags" id="pTags"></div>
+      <a class="live" id="pLive" href="#" target="_blank" rel="noopener" hidden>Visit live site</a>
     </article>
     <nav class="rail" id="rail" aria-label="Projects"></nav>
   </section>
@@ -184,20 +200,18 @@ a{color:inherit}
 
 <section class="ledger" id="work" aria-label="All projects">
   <h2>Selected work, in plain sight.</h2>
-  <p class="lede">The same case studies as the night sky, readable without scrolling through it.</p>
+  <p class="lede">All eleven projects, readable without the animation.</p>
+  <div class="filters" id="filters" role="group" aria-label="Filter projects"></div>
   <ol class="plates" id="plates"></ol>
 </section>
-<div class="proto">Prototype only. Copy for "Engineering" lines is draft, built from your existing project descriptions. Replace with real detail before launch.</div>
+<div class="proto">Design prototype. Project copy mirrors the production data in lib/data.js.</div>
 </main>
 
 <script>
 (()=>{
-const projects=[
- {n:'I',cat:'ERP',t:'MOC Internal Management System',c:'Saudi Ministry of Culture',r:'Contributed to a full internal operations system covering maintenance and hospitality.',e:'POS-style Odoo app on OWL, mobile APIs, and real-time Firebase notifications. (Draft: add your exact scope.)',tags:['OWL','REST APIs','Firebase','Webview'],lat:.45,lon:-.6},
- {n:'II',cat:'Website',t:'Etatwir E-learning Platform',c:'Odoo / E-learning',r:'A full platform with separate experiences for individuals, instructors and companies.',e:'Multi-role dashboards, enrollment, content delivery and progress tracking on Odoo Website. (Draft.)',tags:['Odoo Website','Dashboards','Multi-role'],lat:-.3,lon:.5},
- {n:'III',cat:'Dashboard',t:'Plementus Website & Team Dashboard',c:'Odoo / Company platform',r:'The company website from scratch, plus an internal team dashboard.',e:'Task stages, performance charts and role-based views, with live frontend and backend integration. (Draft.)',tags:['Odoo','Charts','Role-based views'],lat:.15,lon:1.7},
- {n:'IV',cat:'AI',t:'Joviality',c:'AI / Attendance system',r:'A Face ID recognition system for attendance, using AI agents.',e:'Automated identity recognition wired into an operational attendance workflow. (Draft: add model and accuracy notes.)',tags:['Face ID','AI Agents','Attendance'],lat:-.55,lon:-2.2}
-];
+// Source: lib/data.js (read-only copy). Do not edit copy here without checking production data.
+const allProjects=[{"t": "MOC Internal Management System", "c": "Saudi Ministry of Culture", "r": "Contributed to a full internal operations system covering maintenance and hospitality, including Figma-based kitchen and kiosk interfaces, a POS-style Odoo app, mobile APIs and real-time Firebase notifications.", "tags": ["OWL", "REST APIs", "Firebase", "Webview"], "cat": "ERP", "url": ""}, {"t": "Etatwir E-learning Platform", "c": "Odoo / E-learning", "r": "Developed a full e-learning platform with separate experiences for individuals, instructors and companies, including dashboards, enrollment, content delivery and progress tracking.", "tags": ["Odoo Website", "Dashboards", "Multi-role"], "cat": "Website", "url": "https://www.etatwir.com/"}, {"t": "Plementus Website & Team Dashboard", "c": "Odoo / Company Platform", "r": "Developed the company website from scratch and built an internal team dashboard with task stages, performance charts, role-based views and live frontend/backend integration.", "tags": ["Odoo", "Charts", "Role-based views"], "cat": "Dashboard", "url": ""}, {"t": "Joviality", "c": "AI / Attendance System", "r": "Built a full Face ID recognition system for attendance using AI agents, bringing automated identity recognition into an operational attendance workflow.", "tags": ["Face ID", "AI Agents", "Attendance"], "cat": "AI", "url": ""}, {"t": "Egyptwood", "c": "Odoo / Inventory & Website", "r": "Contributed to the website and implemented inventory and stock-related features within the business workflow.", "tags": ["Odoo", "Inventory", "Stock"], "cat": "ERP", "url": "https://www.egyptwood.com/"}, {"t": "Marseilia", "c": "Real Estate / Odoo", "r": "Created a real-estate masterplan experience and developed phone-notes widgets to support property workflows and everyday team interactions.", "tags": ["Masterplan", "Leaflet", "Widgets"], "cat": "Real Estate", "url": ""}, {"t": "MRC", "c": "Odoo 18 Upgrade", "r": "Upgraded the login portal to Odoo 18, adapting the authentication experience to the newer Odoo version.", "tags": ["Odoo 18", "Portal", "Authentication"], "cat": "Upgrade", "url": ""}, {"t": "NOB", "c": "Employee Dashboard", "r": "Created a complete employee dashboard to bring employee information and workflows into a focused, usable interface.", "tags": ["Odoo", "Dashboard", "Employee UX"], "cat": "Dashboard", "url": ""}, {"t": "Oddny", "c": "Website / Odoo", "r": "Created the entire website, from the overall interface and layouts through responsive frontend implementation and Odoo integration.", "tags": ["Odoo Website", "Frontend", "Responsive UI"], "cat": "Website", "url": "https://www.oddny.co/"}, {"t": "United Elevators", "c": "Website / Odoo", "r": "Created the entire website with a custom frontend experience, responsive layouts and Odoo-powered content and business integration.", "tags": ["Odoo Website", "Frontend", "Responsive UI"], "cat": "Website", "url": "https://www.unitedelevators.net/"}, {"t": "Indoqat", "c": "Corporate Website", "r": "Developed the company website, creating the frontend experience and responsive pages for the company’s online presence.", "tags": ["Website", "Frontend", "Responsive UI"], "cat": "Website", "url": "https://www.indoqat.com/"}];
+const projects=[{"t": "MOC Internal Management System", "c": "Saudi Ministry of Culture", "r": "Contributed to a full internal operations system covering maintenance and hospitality, including Figma-based kitchen and kiosk interfaces, a POS-style Odoo app, mobile APIs and real-time Firebase notifications.", "tags": ["OWL", "REST APIs", "Firebase", "Webview"], "cat": "ERP", "url": "", "n": "I", "lat": 0.45, "lon": -0.6}, {"t": "Etatwir E-learning Platform", "c": "Odoo / E-learning", "r": "Developed a full e-learning platform with separate experiences for individuals, instructors and companies, including dashboards, enrollment, content delivery and progress tracking.", "tags": ["Odoo Website", "Dashboards", "Multi-role"], "cat": "Website", "url": "https://www.etatwir.com/", "n": "II", "lat": -0.3, "lon": 0.5}, {"t": "Plementus Website & Team Dashboard", "c": "Odoo / Company Platform", "r": "Developed the company website from scratch and built an internal team dashboard with task stages, performance charts, role-based views and live frontend/backend integration.", "tags": ["Odoo", "Charts", "Role-based views"], "cat": "Dashboard", "url": "", "n": "III", "lat": 0.15, "lon": 1.7}, {"t": "Joviality", "c": "AI / Attendance System", "r": "Built a full Face ID recognition system for attendance using AI agents, bringing automated identity recognition into an operational attendance workflow.", "tags": ["Face ID", "AI Agents", "Attendance"], "cat": "AI", "url": "", "n": "IV", "lat": -0.55, "lon": -2.2}];
 const $=id=>document.getElementById(id);
 const track=$('track'),stage=$('stage'),hero=$('hero'),cue=$('cue'),atlas=$('atlas'),panel=$('panel'),rail=$('rail'),nav=$('nav'),cv=$('orrery');
 const ctx=cv.getContext('2d');
@@ -209,7 +223,14 @@ const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const sm=(a,b,x)=>{x=clamp((x-a)/(b-a));return x*x*(3-2*x)};
 
 
-$('plates').innerHTML=projects.map(p=>`<li class="plate"><span class="n">${p.n}</span><div><h3>${p.t}</h3><div class="cl">${p.c}</div></div><div><p>${p.r}</p><p><b>Engineering</b>${p.e}</p><div class="tg">${p.tags.map(x=>`<span>${x}</span>`).join('')}</div></div></li>`).join('');
+const cats=['All','ERP','Website','Dashboard','AI','Real Estate','Upgrade'];
+function renderList(f){
+  $('plates').innerHTML=allProjects.filter(p=>f==='All'||p.cat===f).map((p,i)=>`<li class="plate"><span class="n">${String(i+1).padStart(2,'0')}</span><div><h3>${p.t}</h3><div class="cl">${p.c}</div></div><div><p>${p.r}</p><div class="tg">${p.tags.map(x=>`<span>${x}</span>`).join('')}</div>${p.url?`<a class="live" href="${p.url}" target="_blank" rel="noopener">Visit live site</a>`:''}</div></li>`).join('');
+  document.querySelectorAll('#filters button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===f));
+}
+$('filters').innerHTML=cats.map(c=>`<button type="button" data-f="${c}">${c}</button>`).join('');
+$('filters').onclick=e=>{const b=e.target.closest('button');if(b)renderList(b.dataset.f)};
+renderList('All');
 rail.innerHTML=projects.map((p,i)=>`<button data-i="${i}"><span>${p.t.split(' ')[0]}</span><i></i></button>`).join('');
 rail.querySelectorAll('button').forEach(b=>b.onclick=()=>{
   const i=+b.dataset.i, top=track.offsetTop, h=track.offsetHeight-innerHeight;
@@ -221,10 +242,10 @@ let W,H,dpr;
 function size(){dpr=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
 addEventListener('resize',size);size();
 let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-const nodes=[];for(let i=0;i<70;i++){const lat=Math.asin(2*rnd()-1),lon=rnd()*Math.PI*2;nodes.push({lat,lon})}
+const nodes=[];for(let i=0;i<38;i++){const lat=Math.asin(2*rnd()-1),lon=rnd()*Math.PI*2;nodes.push({lat,lon})}
 const vec=(lat,lon)=>[Math.cos(lat)*Math.sin(lon),Math.sin(lat),Math.cos(lat)*Math.cos(lon)];
 const nv=nodes.map(n=>vec(n.lat,n.lon));
-const edges=[];for(let i=0;i<nv.length;i++)for(let j=i+1;j<nv.length;j++){const d=Math.hypot(nv[i][0]-nv[j][0],nv[i][1]-nv[j][1],nv[i][2]-nv[j][2]);if(d<.5)edges.push([i,j])}
+const edges=[];for(let i=0;i<nv.length;i++)for(let j=i+1;j<nv.length;j++){const d=Math.hypot(nv[i][0]-nv[j][0],nv[i][1]-nv[j][1],nv[i][2]-nv[j][2]);if(d<.62)edges.push([i,j])}
 
 let rot=0,tilt=.35,targetRot=0,active=0,p=0;
 function proj(v,cx,cy,R){ // rotate about Y by rot, X by tilt
@@ -237,25 +258,25 @@ function draw(t){
   const mobile=W<820;
   const night=sm(.1,.26,p);
   const m=Math.min(W,H);
-  const Rn=m*(mobile?.3:.3)*1.18, Rh=m*(mobile?.2:.2);
+  const Rn=m*(mobile?.26:.27)*1.1, Rh=m*(mobile?.2:.2);
   const h=1-sm(.06,.26,p); // 1 = cradled in Atlas's hands, 0 = centred orrery
   const R=Rh+(Rn-Rh)*(1-h);
   // hands sit ~4% below the top of the Atlas figure; sphere rests in them
   const hx=atlas.offsetLeft+atlas.offsetWidth/2, hy=atlas.offsetTop+atlas.offsetHeight*.045;
   const cxH=hx, cyH=hy-Rh*.88;
-  const cxN=W*(mobile?.5:.68), cyN=H*(mobile?.33:.46);
+  const cxN=W*(mobile?.5:.65), cyN=H*(mobile?.33:.46);
   const cx=cxH+(cxN-cxH)*(1-h), cy=cyH+(cyN-cyH)*(1-h);
   const gold='185,151,91';
-  const lineA=.35+night*.2;
+  const lineA=.4-night*.12;
   // rings: meridians & parallels
   ctx.lineWidth=1;
-  for(let k=-2;k<=2;k++){ // parallels
-    const lat=k*.5;ctx.beginPath();
+  for(let k=-1;k<=1;k++){ // parallels
+    const lat=k*.62;ctx.beginPath();
     for(let s=0;s<=64;s++){const q=proj(vec(lat,s/64*Math.PI*2),cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
     ctx.strokeStyle=`rgba(${gold},${lineA*.55})`;ctx.stroke();
   }
-  for(let k=0;k<6;k++){ // meridians
-    const lon=k/6*Math.PI;ctx.beginPath();
+  for(let k=0;k<4;k++){ // meridians
+    const lon=k/4*Math.PI;ctx.beginPath();
     for(let s=0;s<=64;s++){const lat=s/64*Math.PI*2;const q=proj(vec(lat,lon),cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
     ctx.strokeStyle=`rgba(${gold},${lineA*.4})`;ctx.stroke();
   }
@@ -263,7 +284,7 @@ function draw(t){
   ctx.beginPath();for(let s=0;s<=96;s++){const a=s/96*Math.PI*2;const v=[Math.cos(a)*1.28,Math.sin(a)*.18,Math.sin(a)*1.28*.55];const q=proj(v,cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
   ctx.strokeStyle=`rgba(${gold},${.5+night*.2})`;ctx.lineWidth=1.2;ctx.stroke();ctx.lineWidth=1;
   // constellation edges + nodes (more visible at night)
-  const ca=.08+night*.45;
+  const ca=.1+night*.2;
   for(const [i,j] of edges){const a=proj(nv[i],cx,cy,R),b=proj(nv[j],cx,cy,R);if(a[2]<0&&b[2]<0)continue;
     ctx.strokeStyle=`rgba(${night>.5?'239,233,218':'86,52,95'},${ca*.5})`;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()}
   for(const v of nv){const q=proj(v,cx,cy,R);if(q[2]<0)continue;ctx.fillStyle=`rgba(${night>.5?'239,233,218':'86,52,95'},${ca+.1})`;ctx.beginPath();ctx.arc(q[0],q[1],1.4,0,7);ctx.fill()}
@@ -279,7 +300,7 @@ function draw(t){
 
 function update(t){
   const top=track.offsetTop,len=track.offsetHeight-innerHeight;
-  p=clamp((scrollY-top)/len);
+  p=reduce||len<=0?0:clamp((scrollY-top)/len);
   const bgc=mix(A,B,sm(.1,.26,p));const night=sm(.1,.26,p);
   stage.style.background=`rgb(${bgc})`;
   stage.style.color=night>.5?'#efe9da':'#1a1f2c';
@@ -295,7 +316,7 @@ function update(t){
   const pp=clamp((p-.3)/.7);
   const idx=Math.min(projects.length-1,Math.floor(pp*projects.length));
   const showP=sm(.22,.3,p)*(1-sm(.97,1,p));
-  panel.style.opacity=showP;rail.style.opacity=showP;rail.style.pointerEvents=showP>.5?'auto':'none';
+  panel.style.opacity=showP;rail.style.opacity=showP;const vis=showP>.05?'visible':'hidden';panel.style.visibility=vis;rail.style.visibility=vis;panel.style.pointerEvents=showP>.5?'auto':'none';rail.style.pointerEvents=showP>.5?'auto':'none';
   if(idx!==active||!panel.dataset.i){active=idx;panel.dataset.i=1;fill(projects[idx])}
   rail.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===active));
   // target rotation: bring active star to face front
@@ -305,7 +326,7 @@ function update(t){
 let lastIdx=-1;
 function fill(pr){
   if(lastIdx===projects.indexOf(pr))return;lastIdx=projects.indexOf(pr);
-  $('pIdx').textContent=pr.n;$('pCat').textContent=pr.cat;$('pTitle').textContent=pr.t;$('pClient').textContent=pr.c;$('pRole').textContent=pr.r;$('pEng').textContent=pr.e;
+  $('pIdx').textContent=pr.n;$('pCat').textContent=pr.cat;$('pTitle').textContent=pr.t;$('pClient').textContent=pr.c;$('pRole').textContent=pr.r;const L=$('pLive');if(pr.url){L.href=pr.url;L.hidden=false}else L.hidden=true;
   $('pTags').innerHTML=pr.tags.map(x=>`<span>${x}</span>`).join('');
 }
 function frame(t){
