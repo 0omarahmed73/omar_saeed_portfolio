@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#B9975B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <title>Omar A. Saeed — Atlas mark</title>
+  <circle cx="32" cy="22" r="14"/>
+  <ellipse cx="32" cy="22" rx="14" ry="4.6" stroke-width="1.4"/>
+  <path d="M32 8v28" stroke-width="1.4"/>
+  <path d="M8 58 L27 33 M56 58 L37 33"/>
+  <path d="M19 49h26" stroke-width="1.8"/>
+</svg>

@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atlas Orrery — Design Prototype</title>
+<!-- ISOLATED DESIGN PROTOTYPE. Not part of the Next.js app. No dependencies except Google Fonts. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papyrus:#F3EFE5; --obsidian:#101725; --gold:#B9975B; --plum:#56345F; --patina:#6B8F88;
+  --bg:var(--papyrus); --fg:#1a1f2c; --muted:#5b5f6b; --line:rgba(26,31,44,.16);
+  --serif:'Cormorant',Georgia,serif; --sans:'Instrument Sans',system-ui,sans-serif;
+  --gutter:clamp(20px,5vw,72px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--papyrus);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* nav */
+.nav{position:fixed;inset:0 0 auto 0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:22px var(--gutter);color:var(--fg);transition:color .3s}
+.nav.on-dark{color:#efe9da}
+.mark{display:inline-flex;align-items:center;gap:10px;font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:.01em;text-decoration:none}
+.nav ul{display:flex;gap:34px;list-style:none;margin:0;padding:0;font-size:14px}
+.nav ul a{text-decoration:none;opacity:.78;padding:10px 0}
+.nav ul a:hover{opacity:1}
+.cv{border:1px solid currentColor;border-radius:999px;padding:9px 18px;font-size:14px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+
+/* pinned stage */
+.stage-track{height:520vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--bg);color:var(--fg)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.atlas{position:absolute;right:calc(var(--gutter) + 4vw);bottom:-2vh;width:min(38vw,520px);will-change:transform,opacity}
+.atlas svg{width:100%;height:auto;display:block}
+.atlas-note{position:absolute;right:var(--gutter);bottom:20px;font-size:11px;color:var(--muted);max-width:230px;text-align:right}
+
+.hero-copy{position:absolute;left:var(--gutter);top:50%;transform:translateY(-50%);max-width:min(860px,60vw);will-change:opacity,transform}
+.hero-copy h1{font-family:var(--serif);font-weight:500;font-size:clamp(52px,6.6vw,104px);line-height:.94;letter-spacing:-.02em;margin:0 0 28px}
+.hero-copy h1 em{font-style:italic;color:var(--gold)}
+.hero-copy p{max-width:44ch;font-size:18px;color:var(--muted);margin:0 0 34px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 26px;border-radius:999px;text-decoration:none;font-weight:500;font-size:15px;border:1px solid var(--fg);background:var(--fg);color:var(--papyrus)}
+.btn.ghost{background:transparent;color:var(--fg)}
+.scrollcue{position:absolute;left:var(--gutter);bottom:28px;font-size:13px;color:var(--muted);display:flex;gap:12px;align-items:center}
+.scrollcue i{display:block;width:40px;height:1px;background:var(--gold)}
+
+/* project panel (night phase) */
+.panel{position:absolute;left:var(--gutter);top:50%;transform:translateY(-50%);width:min(520px,44vw);opacity:0;pointer-events:none;color:#efe9da}
+.panel .idx{font-family:var(--serif);font-size:20px;color:var(--gold);display:flex;gap:14px;align-items:center;margin-bottom:18px}
+.panel .idx i{flex:0 0 60px;height:1px;background:var(--gold);opacity:.6}
+.panel h2{font-family:var(--serif);font-weight:500;font-size:clamp(38px,4.6vw,68px);line-height:1;margin:0 0 6px;letter-spacing:-.01em}
+.panel .client{font-style:italic;font-family:var(--serif);font-size:20px;color:#b9b2a2;margin-bottom:22px}
+.panel .role{font-size:16px;color:#d6d0c0;max-width:46ch;margin-bottom:22px}
+.eng{border-top:1px solid rgba(239,233,218,.2);padding-top:16px;margin-bottom:22px}
+.eng b{display:block;font-weight:600;font-size:12px;color:var(--gold);margin-bottom:6px;letter-spacing:.04em}
+.eng span{font-size:15px;color:#d6d0c0;display:block;max-width:48ch}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tags span{border:1px solid rgba(239,233,218,.28);border-radius:999px;padding:4px 12px;font-size:13px;color:#d6d0c0}
+.rail{position:absolute;right:var(--gutter);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;opacity:0;color:#efe9da}
+.rail button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;justify-content:flex-end;font-size:13px;opacity:.55;min-height:44px}
+.rail button i{width:9px;height:9px;border-radius:50%;border:1px solid var(--gold)}
+.rail button.on{opacity:1}.rail button.on i{background:var(--gold)}
+.rail button:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+
+/* light return */
+.ledger{background:var(--papyrus);padding:clamp(80px,12vw,180px) var(--gutter)}
+.ledger h2{font-family:var(--serif);font-weight:500;font-size:clamp(40px,6vw,92px);line-height:.98;margin:0 0 40px;max-width:16ch}
+.ledger .row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
+.ledger .cell{padding:28px 28px 28px 0;border-right:1px solid var(--line)}
+.ledger .cell+.cell{padding-left:28px}.ledger .cell:last-child{border-right:0}
+.ledger h3{font-family:var(--serif);font-weight:600;font-size:26px;margin:0 0 8px}
+.ledger p{margin:0;color:var(--muted);max-width:38ch}
+.proto{background:var(--obsidian);color:#b9b2a2;padding:28px var(--gutter);font-size:13px}
+
+@media (max-width:820px){
+  br.d{display:none}
+  .nav ul{display:none}
+  .stage-track{height:560vh}
+  .hero-copy{top:18vh;transform:none;max-width:none;right:var(--gutter)}
+  .hero-copy h1{font-size:clamp(46px,13vw,72px)}
+  .hero-copy p{font-size:16px}
+  .atlas{width:56vw;right:-4vw;bottom:-4vh}
+  .atlas-note{display:none}
+  .panel{top:auto;bottom:0;transform:none;width:auto;left:0;right:0;padding:56px var(--gutter) 5vh;background:linear-gradient(to bottom,rgba(16,23,37,0),rgba(16,23,37,.94) 38%)}
+  .panel h2{font-size:38px}.panel .role{font-size:15px}
+  .rail{top:14vh;transform:none;flex-direction:row;right:var(--gutter);left:var(--gutter);justify-content:space-between}
+  .rail button span{display:none}
+  .ledger .row{grid-template-columns:1fr}
+  .ledger .cell,.ledger .cell+.cell{padding:22px 0;border-right:0;border-bottom:1px solid var(--line)}
+}
+@media (prefers-reduced-motion:reduce){ .stage canvas{opacity:.9} }
+</style>
+</head>
+<body>
+<header class="nav" id="nav">
+  <a class="mark" href="#top" aria-label="Omar A. Saeed"><svg viewBox="0 0 64 64" width="34" height="34" fill="none" stroke="#B9975B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<circle cx="32" cy="33" r="26"/><path d="M17 49 L32 15 L47 49"/><path d="M22 39.5 Q32 46 42 39.5" stroke-width="1.6"/><circle cx="32" cy="9" r="1.6" fill="#B9975B" stroke="none"/></svg><span>Omar A. Saeed</span></a>
+  <ul><li><a href="#work">Work</a></li><li><a href="#stack">Capabilities</a></li><li><a href="#path">Experience</a></li><li><a href="#contact">Contact</a></li></ul>
+  <a class="cv" href="/cv.pdf">CV</a>
+</header>
+
+<main id="top">
+<div class="stage-track" id="track">
+  <section class="stage" id="stage" aria-label="Introduction and selected work">
+    <canvas id="orrery" aria-hidden="true"></canvas>
+
+    <div class="atlas" id="atlas" aria-hidden="true">
+      <!-- PLACEHOLDER Atlas silhouette. To be replaced by a sculpted/licensed 3D model. -->
+      <svg viewBox="0 0 400 440" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="mb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdfbf6"/><stop offset=".5" stop-color="#e6dfcf"/><stop offset="1" stop-color="#a99f88"/></linearGradient>
+          <radialGradient id="lit" cx=".22" cy=".25" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="shade" cx=".85" cy=".8" r=".7"><stop offset="0" stop-color="#5a5240" stop-opacity=".45"/><stop offset="1" stop-color="#5a5240" stop-opacity="0"/></radialGradient>
+          <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset=".72" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
+          <mask id="m"><rect width="400" height="440" fill="url(#fade)"/></mask>
+        </defs>
+        <g mask="url(#m)">
+          <g id="fig">
+            <!-- raised arms, cupping the sphere -->
+            <path d="M92 238 C52 190 54 110 92 44 C98 30 108 18 120 16 C134 14 140 28 132 40 C112 76 108 128 134 176 C142 192 150 204 156 214Z"/>
+            <path d="M308 238 C348 190 346 110 308 44 C302 30 292 18 280 16 C266 14 260 28 268 40 C288 76 292 128 266 176 C258 192 250 204 244 214Z"/>
+            <!-- torso -->
+            <path d="M34 440 C38 336 62 268 124 232 C152 216 172 210 174 198 L226 198 C228 210 248 216 276 232 C338 268 362 336 366 440Z"/>
+            <!-- neck + bowed head -->
+            <path d="M176 168 L224 168 L230 212 C214 224 186 224 170 212Z"/>
+            <path d="M200 100 C236 100 246 132 238 156 C230 182 214 192 200 192 C184 192 170 182 164 158 C158 132 168 100 200 100Z"/>
+            <!-- hair curls -->
+            <path d="M166 128 C160 100 184 88 204 92 C230 90 246 108 238 134 C232 118 220 112 204 112 C186 112 174 118 166 128Z" fill="#cfc6b0"/>
+          </g>
+          <use href="#fig" fill="url(#mb)"/>
+          <use href="#fig" fill="url(#lit)"/>
+          <use href="#fig" fill="url(#shade)"/>
+          <!-- carved anatomy -->
+          <g fill="none" stroke="#7a6f58" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round">
+            <path d="M174 206 C150 214 120 236 100 266"/><path d="M226 206 C250 214 280 236 300 266"/>
+            <path d="M200 232 L200 300"/><path d="M130 290 C160 310 180 306 200 300 C220 306 240 310 270 290"/>
+            <path d="M118 120 C108 90 116 56 128 36"/><path d="M282 120 C292 90 284 56 272 36"/>
+            <path d="M186 150 C192 156 208 156 214 150"/>
+          </g>
+          <!-- gold rim light, upper left -->
+          <g fill="none" stroke="#B9975B" stroke-width="1.6" stroke-linecap="round" stroke-opacity=".85">
+            <path d="M92 44 C54 110 52 190 92 238"/><path d="M124 232 C70 262 44 322 36 420"/><path d="M164 158 C158 132 168 100 200 100"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <p class="atlas-note">Placeholder silhouette. Final: sculpted marble Atlas, cropped, lit from the upper left.</p>
+
+    <div class="hero-copy" id="hero">
+      <h1>Software that<br class="d"> <em>carries</em> the weight<br class="d"> of a business.</h1>
+      <p>I'm Omar A. Saeed, an Odoo developer and frontend engineer. I build the systems companies run on, and make them feel considered.</p>
+      <div class="cta"><a class="btn" href="#work">Selected work</a><a class="btn ghost" href="/cv.pdf">Download CV</a></div>
+    </div>
+    <div class="scrollcue" id="cue"><i></i>Scroll. The sky turns to night.</div>
+
+    <article class="panel" id="panel" aria-live="polite">
+      <div class="idx"><span id="pIdx">I</span><i></i><span id="pCat">ERP</span></div>
+      <h2 id="pTitle"></h2>
+      <div class="client" id="pClient"></div>
+      <p class="role" id="pRole"></p>
+      <div class="eng"><b>Engineering</b><span id="pEng"></span></div>
+      <div class="tags" id="pTags"></div>
+    </article>
+    <nav class="rail" id="rail" aria-label="Projects"></nav>
+  </section>
+</div>
+
+<section class="ledger" id="stack">
+  <h2>Why the sphere is not just decoration.</h2>
+  <div class="row">
+    <div class="cell"><h3>Navigation</h3><p>Each project is a star on the sphere. Scroll or pick one and the globe turns to it.</p></div>
+    <div class="cell"><h3>Proof</h3><p>The sphere is drawn live, and it is the same code family as the Three.js network already on your site.</p></div>
+    <div class="cell"><h3>A fallback</h3><p>Without motion or WebGL, this section is a plain ivory list of the same four case studies.</p></div>
+  </div>
+</section>
+<div class="proto">Prototype only. Copy for "Engineering" lines is draft, built from your existing project descriptions. Replace with real detail before launch.</div>
+</main>
+
+<script>
+(()=>{
+const projects=[
+ {n:'I',cat:'ERP',t:'MOC Internal Management System',c:'Saudi Ministry of Culture',r:'Contributed to a full internal operations system covering maintenance and hospitality.',e:'POS-style Odoo app on OWL, mobile APIs, and real-time Firebase notifications. (Draft: add your exact scope.)',tags:['OWL','REST APIs','Firebase','Webview'],lat:.45,lon:-.6},
+ {n:'II',cat:'Website',t:'Etatwir E-learning Platform',c:'Odoo / E-learning',r:'A full platform with separate experiences for individuals, instructors and companies.',e:'Multi-role dashboards, enrollment, content delivery and progress tracking on Odoo Website. (Draft.)',tags:['Odoo Website','Dashboards','Multi-role'],lat:-.3,lon:.5},
+ {n:'III',cat:'Dashboard',t:'Plementus Website & Team Dashboard',c:'Odoo / Company platform',r:'The company website from scratch, plus an internal team dashboard.',e:'Task stages, performance charts and role-based views, with live frontend and backend integration. (Draft.)',tags:['Odoo','Charts','Role-based views'],lat:.15,lon:1.7},
+ {n:'IV',cat:'AI',t:'Joviality',c:'AI / Attendance system',r:'A Face ID recognition system for attendance, using AI agents.',e:'Automated identity recognition wired into an operational attendance workflow. (Draft: add model and accuracy notes.)',tags:['Face ID','AI Agents','Attendance'],lat:-.55,lon:-2.2}
+];
+const $=id=>document.getElementById(id);
+const track=$('track'),stage=$('stage'),hero=$('hero'),cue=$('cue'),atlas=$('atlas'),panel=$('panel'),rail=$('rail'),nav=$('nav'),cv=$('orrery');
+const ctx=cv.getContext('2d');
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const A=hex('#F3EFE5'),B=hex('#101725');
+const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const sm=(a,b,x)=>{x=clamp((x-a)/(b-a));return x*x*(3-2*x)};
+
+rail.innerHTML=projects.map((p,i)=>`<button data-i="${i}"><span>${p.t.split(' ')[0]}</span><i></i></button>`).join('');
+rail.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  const i=+b.dataset.i, top=track.offsetTop, h=track.offsetHeight-innerHeight;
+  scrollTo({top:top+h*(.3+.7*(i+.5)/projects.length),behavior:reduce?'auto':'smooth'});
+});
+
+// sphere points: constellation nodes + project stars
+let W,H,dpr;
+function size(){dpr=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',size);size();
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const nodes=[];for(let i=0;i<70;i++){const lat=Math.asin(2*rnd()-1),lon=rnd()*Math.PI*2;nodes.push({lat,lon})}
+const vec=(lat,lon)=>[Math.cos(lat)*Math.sin(lon),Math.sin(lat),Math.cos(lat)*Math.cos(lon)];
+const nv=nodes.map(n=>vec(n.lat,n.lon));
+const edges=[];for(let i=0;i<nv.length;i++)for(let j=i+1;j<nv.length;j++){const d=Math.hypot(nv[i][0]-nv[j][0],nv[i][1]-nv[j][1],nv[i][2]-nv[j][2]);if(d<.5)edges.push([i,j])}
+
+let rot=0,tilt=.35,targetRot=0,active=0,p=0;
+function proj(v,cx,cy,R){ // rotate about Y by rot, X by tilt
+  const cr=Math.cos(rot),sr=Math.sin(rot);let x=v[0]*cr+v[2]*sr,z=-v[0]*sr+v[2]*cr,y=v[1];
+  const ct=Math.cos(tilt),st=Math.sin(tilt);const y2=y*ct-z*st,z2=y*st+z*ct;
+  return [cx+x*R,cy-y2*R,z2];
+}
+function draw(t){
+  ctx.clearRect(0,0,W,H);
+  const mobile=W<820;
+  const night=sm(.1,.26,p);
+  const m=Math.min(W,H);
+  const Rn=m*(mobile?.3:.3)*1.18, Rh=m*(mobile?.2:.2);
+  const h=1-sm(.06,.26,p); // 1 = cradled in Atlas's hands, 0 = centred orrery
+  const R=Rh+(Rn-Rh)*(1-h);
+  // hands sit ~4% below the top of the Atlas figure; sphere rests in them
+  const hx=atlas.offsetLeft+atlas.offsetWidth/2, hy=atlas.offsetTop+atlas.offsetHeight*.045;
+  const cxH=hx, cyH=hy-Rh*.88;
+  const cxN=W*(mobile?.5:.68), cyN=H*(mobile?.33:.46);
+  const cx=cxH+(cxN-cxH)*(1-h), cy=cyH+(cyN-cyH)*(1-h);
+  const gold='185,151,91';
+  const lineA=.35+night*.2;
+  // rings: meridians & parallels
+  ctx.lineWidth=1;
+  for(let k=-2;k<=2;k++){ // parallels
+    const lat=k*.5;ctx.beginPath();
+    for(let s=0;s<=64;s++){const q=proj(vec(lat,s/64*Math.PI*2),cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
+    ctx.strokeStyle=`rgba(${gold},${lineA*.55})`;ctx.stroke();
+  }
+  for(let k=0;k<6;k++){ // meridians
+    const lon=k/6*Math.PI;ctx.beginPath();
+    for(let s=0;s<=64;s++){const lat=s/64*Math.PI*2;const q=proj(vec(lat,lon),cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
+    ctx.strokeStyle=`rgba(${gold},${lineA*.4})`;ctx.stroke();
+  }
+  // ecliptic ring, tilted, wider than sphere
+  ctx.beginPath();for(let s=0;s<=96;s++){const a=s/96*Math.PI*2;const v=[Math.cos(a)*1.28,Math.sin(a)*.18,Math.sin(a)*1.28*.55];const q=proj(v,cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
+  ctx.strokeStyle=`rgba(${gold},${.5+night*.2})`;ctx.lineWidth=1.2;ctx.stroke();ctx.lineWidth=1;
+  // constellation edges + nodes (more visible at night)
+  const ca=.08+night*.45;
+  for(const [i,j] of edges){const a=proj(nv[i],cx,cy,R),b=proj(nv[j],cx,cy,R);if(a[2]<0&&b[2]<0)continue;
+    ctx.strokeStyle=`rgba(${night>.5?'239,233,218':'86,52,95'},${ca*.5})`;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()}
+  for(const v of nv){const q=proj(v,cx,cy,R);if(q[2]<0)continue;ctx.fillStyle=`rgba(${night>.5?'239,233,218':'86,52,95'},${ca+.1})`;ctx.beginPath();ctx.arc(q[0],q[1],1.4,0,7);ctx.fill()}
+  // project stars
+  projects.forEach((pr,i)=>{
+    const q=proj(vec(pr.lat,pr.lon),cx,cy,R);const front=q[2]>-.1;const on=i===active&&night>.4;
+    ctx.globalAlpha=(front?1:.25)*(.35+.65*night);
+    ctx.fillStyle=`rgb(${gold})`;ctx.beginPath();ctx.arc(q[0],q[1],on?6:3.5,0,7);ctx.fill();
+    if(on){ctx.strokeStyle=`rgba(${gold},.8)`;ctx.beginPath();ctx.arc(q[0],q[1],14+Math.sin(t/400)*2,0,7);ctx.stroke()}
+    ctx.globalAlpha=1;
+  });
+}
+
+function update(t){
+  const top=track.offsetTop,len=track.offsetHeight-innerHeight;
+  p=clamp((scrollY-top)/len);
+  const bgc=mix(A,B,sm(.1,.26,p));const night=sm(.1,.26,p);
+  stage.style.background=`rgb(${bgc})`;
+  stage.style.color=night>.5?'#efe9da':'#1a1f2c';
+  nav.classList.toggle('on-dark',night>.5&&p<.995);
+  // hero + atlas leave
+  const out=sm(.03,.14,p);
+  hero.style.opacity=1-out;hero.style.transform=`translateY(calc(-50% - ${out*40}px))`;
+  if(innerWidth<=820)hero.style.transform=`translateY(${-out*40}px)`;
+  cue.style.opacity=1-sm(0,.06,p);
+  atlas.style.opacity=1-sm(.08,.22,p);document.querySelector('.atlas-note').style.opacity=1-sm(.02,.1,p);atlas.style.transform=`translateY(${sm(.1,.3,p)*18}vh) scale(${1+sm(0,.3,p)*.06})`;
+  hero.style.pointerEvents=out>.7?'none':'auto';
+  // project phase
+  const pp=clamp((p-.3)/.7);
+  const idx=Math.min(projects.length-1,Math.floor(pp*projects.length));
+  const showP=sm(.22,.3,p)*(1-sm(.97,1,p));
+  panel.style.opacity=showP;rail.style.opacity=showP;rail.style.pointerEvents=showP>.5?'auto':'none';
+  if(idx!==active||!panel.dataset.i){active=idx;panel.dataset.i=1;fill(projects[idx])}
+  rail.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===active));
+  // target rotation: bring active star to face front
+  const pr=projects[p<.3?0:active];targetRot=-pr.lon;
+  if(p>=.3)tilt+=(pr.lat*.6+.1-tilt)*.06; else tilt+=(.35-tilt)*.06;
+}
+let lastIdx=-1;
+function fill(pr){
+  if(lastIdx===projects.indexOf(pr))return;lastIdx=projects.indexOf(pr);
+  $('pIdx').textContent=pr.n;$('pCat').textContent=pr.cat;$('pTitle').textContent=pr.t;$('pClient').textContent=pr.c;$('pRole').textContent=pr.r;$('pEng').textContent=pr.e;
+  $('pTags').innerHTML=pr.tags.map(x=>`<span>${x}</span>`).join('');
+}
+function frame(t){
+  update(t);
+  if(p<.3&&!reduce)targetRot=-(t/9000)%(Math.PI*2)-p*2; // gentle drift in hero
+  const d=((targetRot-rot+Math.PI*3)%(Math.PI*2))-Math.PI; // shortest path
+  rot+=reduce?d:d*.05;
+  draw(t);requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
