@@ -280,8 +280,9 @@ function draw(t){
     for(let s=0;s<=64;s++){const lat=s/64*Math.PI*2;const q=proj(vec(lat,lon),cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
     ctx.strokeStyle=`rgba(${gold},${lineA*.4})`;ctx.stroke();
   }
+  const ringK=W<1100?1.0:1.28;
   // ecliptic ring, tilted, wider than sphere
-  ctx.beginPath();for(let s=0;s<=96;s++){const a=s/96*Math.PI*2;const v=[Math.cos(a)*1.28,Math.sin(a)*.18,Math.sin(a)*1.28*.55];const q=proj(v,cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
+  ctx.beginPath();for(let s=0;s<=96;s++){const a=s/96*Math.PI*2;const v=[Math.cos(a)*ringK,Math.sin(a)*.18,Math.sin(a)*ringK*.55];const q=proj(v,cx,cy,R);s?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])}
   ctx.strokeStyle=`rgba(${gold},${.5+night*.2})`;ctx.lineWidth=1.2;ctx.stroke();ctx.lineWidth=1;
   // constellation edges + nodes (more visible at night)
   const ca=.1+night*.2;
