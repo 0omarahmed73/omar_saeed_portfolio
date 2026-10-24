@@ -27,6 +27,11 @@ Open `index.html` in a browser. It needs internet only for the Google Fonts. Opt
 | `logo-b.svg` | Chosen mark: sphere monogram |
 | `logo-mark.svg`, `logo-c.svg` | Rejected alternatives, kept for reference |
 | `README.md` | This file |
+| `atlas-3d.html` | **Experiment.** Procedural 3D Atlas (metaball marble figure and gold armillary sphere). Self-contained, about 950 KB with Three.js inlined. Open it through a local server: `python3 -m http.server`, then `/atlas-3d.html` (the preview pane refused it as a plain file) |
+| `atlas3d/atlas.js`, `atlas3d/build.py` | Source of the experiment and the script that inlines Three.js from `node_modules` to produce `atlas-3d.html` |
+| `private-notes/LINKS-AUDIT.md` (local only, git-ignored) | Links and deployment audit, with a table of questions for Omar |
+| `private-notes/PROJECT-NOTES.md` (local only, git-ignored) | Draft engineering notes per featured project, with verified facts separated from claims to confirm |
+| `private-notes/ATLAS-ASSET-RESEARCH.md` (local only, git-ignored) | Atlas asset candidates and licence status (nothing downloaded) |
 | `logo-compare.html` | Untracked helper that compares the logo options. Safe to delete |
 
 ## What is finished
@@ -57,14 +62,20 @@ Open `index.html` in a browser. It needs internet only for the Google Fonts. Opt
 - **Plum and Patina** are in the palette but unused.
 - **Fonts load from Google Fonts,** so they should be self-hosted for production.
 
+## Atlas, zero-budget path
+
+No purchases or paid work. The prototype keeps the SVG Atlas in `index.html` as the fallback and adds a free procedural 3D experiment in `atlas-3d.html`: a smooth marble figure made with Three.js MarchingCubes metaballs, a gold armillary sphere with constellation links, a pointer-driven turn, an idle sway that stops with reduced motion, and rendering that pauses off-screen. **It is not wired into the hero yet.**
+
+Assessment from screenshots: the gold sphere looks premium. The figure reads as smooth clay, not carved marble. Next steps if you continue it: sharper anatomy (shoulders, jaw, hands), a stronger shadow side, a bump map for stone grain, and a lazy-loaded integration with the SVG as fallback.
+
 ## What we need
 
 1. **An Atlas asset.** One of:
    - A properly licensed marble Atlas 3D model (glTF/GLB, ideally under about 2 MB and Draco-compressed) plus its licence text.
    - A commissioned or illustrated transparent PNG, WebP or SVG of Atlas with raised hands, about 1600x1760, hands open at the top centre.
    Then swap the `<svg>` inside `#atlas`. The sphere is placed from the hands at roughly 4.5% below the top of the figure box (`hy` in `draw()`), so adjust that ratio for the new asset. **No model licences have been verified.**
-2. **Confirmed live links.** The repo's `lib/data.js` has URLs for Etatwir, Egyptwood, Oddny, United Elevators and Indoqat. The deployed site showed "Live site" on different entries (MOC, Joviality, NOB, Oddny, United Elevators). The repo and the deployed site disagree, so please confirm which links are correct.
-3. **Real engineering detail per project.** The data has only short descriptions. It has no per-project role, responsibilities, outcomes or metrics. Featured panels cannot tell a deeper engineering story until these exist. Nothing has been invented.
+2. **Link decisions.** The repo and the deployed site agree on all live links (see `private-notes/LINKS-AUDIT.md` (local only, git-ignored); an earlier note here saying they disagreed was wrong). Open questions: public links for private client systems, the canonical portfolio URL, and the details in `private-notes/LINKS-AUDIT.md` (local only, git-ignored).
+3. **Real engineering detail per project.** See `private-notes/PROJECT-NOTES.md` (local only, git-ignored). The data has only short descriptions. It has no per-project role, responsibilities, outcomes or metrics. Featured panels cannot tell a deeper engineering story until these exist. Nothing has been invented.
 4. **A decision on the Arabic or RTL version.** I did not check whether the production site supports it.
 5. **A decision on the remaining sections** (see "Not yet designed" above) and on whether to build the intro.
 6. **A real-device scroll test** on a phone and a tablet.
