@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import AtlasFigure from './AtlasFigure';
-import { D, atlas, ATLAS_SOURCE, ATLAS_LICENSE } from '@/lib/data';
+import { D, site, atlas, ATLAS_SOURCE, ATLAS_LICENSE } from '@/lib/data';
 import '@/app/atlas.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -146,10 +146,10 @@ export default function AtlasStage() {
       cur.x += (target.x - cur.x) * .07;
       cur.y += (target.y - cur.y) * .07;
       const fade = 1 - smooth(.05, .18, stateRef.current.p);
-      const yaw = cur.x * 7 * fade, pitch = cur.y * -3.5 * fade;
+      const yaw = cur.x * 12 * fade, pitch = cur.y * -6 * fade;
       // in 3D the scene rotates its own group; the flat fallback uses the shared CSS transform
-      pointerRef.current.x = cur.x * fade;
-      pointerRef.current.y = cur.y * fade;
+      pointerRef.current.x = target.x;
+      pointerRef.current.y = target.y;
       if (modeRef.current === 'webgl') {
         if (wroteCss) { sculpt.style.transform = 'none'; wroteCss = false; }
       } else {
@@ -212,7 +212,7 @@ export default function AtlasStage() {
           <p>{atlas.sub}</p>
           <div className="at-cta">
             <a className="at-btn" href="#projects">{atlas.cta[0]}</a>
-            <a className="at-btn at-ghost" href="/cv.pdf" download>{atlas.cta[1]}</a>
+            <a className="at-btn at-ghost" href={site.cvUrl}>{atlas.cta[1]}</a>
           </div>
         </div>
         <div ref={cueRef} className="at-cue"><i />{atlas.cue}</div>

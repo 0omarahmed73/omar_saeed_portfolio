@@ -80,12 +80,19 @@
   .at-br{display:none}
   .at-track{margin-left:0;height:400vh}
   .at-list{margin-left:0}
-  .at-hero{top:calc(90px + 6vh);transform:none;max-width:none;right:var(--at-gutter)}
-  .at-hero h1{font-size:clamp(46px,13vw,72px)}
-  .at-hero p{font-size:16px}
-  .at-atlas{width:56%;right:-4%;bottom:-4vh}
-  .at-panel{top:auto;bottom:0;transform:none;width:auto;left:0;right:0;padding:56px var(--at-gutter) 5vh;background:linear-gradient(to bottom,rgba(16,23,37,0),rgba(16,23,37,.94) 38%)}
-  .at-panel h2{font-size:38px}.at-role{font-size:15px}
+  .at-hero{top:calc(77px + clamp(28px,6vh,54px));transform:none;max-width:none;right:var(--at-gutter)}
+  .at-hero h1{font-size:clamp(42px,12.2vw,68px);line-height:.92;margin-bottom:20px;text-wrap:balance}
+  .at-hero p{font-size:clamp(15px,4.1vw,17px);line-height:1.55;margin-bottom:24px}
+  .at-cta{flex-wrap:nowrap;gap:10px;max-width:320px}
+  .at-cta .at-btn{flex:1;justify-content:center;min-width:0;min-height:46px;padding:0 12px;white-space:nowrap;font-size:14px}
+  .at-atlas{width:54%;right:0;bottom:-3vh}
+  .at-cue{bottom:max(20px,env(safe-area-inset-bottom));max-width:128px;font-size:12px;line-height:1.45;gap:8px}
+  .at-cue i{width:22px;flex:0 0 22px}
+  .at-panel{top:auto;bottom:0;transform:none;width:auto;left:0;right:0;max-height:calc(100svh - 96px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:42px var(--at-gutter) max(28px,env(safe-area-inset-bottom));background:linear-gradient(to bottom,rgba(16,23,37,0),rgba(16,23,37,.97) 28%)}
+  .at-panel::-webkit-scrollbar{display:none}
+  .at-panel h2{font-size:clamp(32px,10vw,38px)}.at-role{font-size:14px;line-height:1.5;margin-bottom:18px}.at-client{margin-bottom:16px}.at-idx{margin-bottom:12px}
+  .at-panel .at-links{justify-content:flex-end;margin-top:18px;padding-bottom:2px}
+  .at-panel .at-live{display:inline-flex;align-items:center;min-height:44px;margin:0;padding:0 16px;border:1px solid currentColor;border-radius:999px;text-decoration:none}
   .at-rail{top:126px;transform:none;flex-direction:row;right:var(--at-gutter);left:var(--at-gutter);justify-content:space-between}
   .at-rail a span{display:none}
   .at-plate{grid-template-columns:1fr;gap:10px}
@@ -118,8 +125,8 @@
 .at-credit a,.atlas-credit a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 .at-credit a:focus-visible,.atlas-credit a:focus-visible{outline:2px solid var(--at-gold);outline-offset:3px}
 .atlas-credit{margin:28px 0 0;font-size:12px;line-height:1.5;color:var(--muted);max-width:70ch}
-@media (max-width:600px){.at-atlas{width:60%;right:1%;bottom:-3vh}.at-cue{max-width:46%}}
-@media (max-width:380px){.at-atlas{width:56%}}
+@media (max-width:600px){.at-atlas{width:54%;right:0;bottom:-3vh}.at-cue{display:none}}
+@media (max-width:360px){.at-atlas{width:52%}.at-hero{top:104px}.at-hero h1{font-size:42px}.at-hero p{font-size:15px}.at-tags span{font-size:12px;padding:3px 10px}}
 @media (max-width:900px){.at-skip:focus{top:96px}.at-niche,.at-grain,.at-credit{display:none}.at-list:before{display:none}.at-skyarc{height:30vh}}
 
 /* cinematic hero lighting: a soft blue-gray pool behind Atlas that fades as the sky turns to night */

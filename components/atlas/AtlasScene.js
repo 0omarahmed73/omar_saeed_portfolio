@@ -405,7 +405,8 @@ export default function AtlasScene({ stateRef, atlasRef, featured, pointerRef, o
       }
 
       // one transform for the whole group: the mouse turns statue and instrument together
-      const yaw = ptr.x * 0.122, pitch = ptr.y * -0.061; // 7deg / 3.5deg maximum
+      const pointerFade = 1 - smooth(.05, .18, p);
+      const yaw = ptr.x * 0.28 * pointerFade, pitch = ptr.y * -0.12 * pointerFade; // responsive 16deg / 7deg turn
       rig.rotation.y += (yaw - rig.rotation.y) * (reduce ? 1 : .12);
       rig.rotation.x += (pitch - rig.rotation.x) * (reduce ? 1 : .12);
 

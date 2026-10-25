@@ -8,23 +8,11 @@ import Splash from '@/components/Splash';
 import AtlasStage from '@/components/atlas/AtlasStage';
 import ProjectList from '@/components/atlas/ProjectList';
 import AnubisFigure from '@/components/atlas/AnubisFigure';
-import { D, skills, ATLAS_SOURCE, ATLAS_FALLBACK_SOURCE, ATLAS_LICENSE } from '@/lib/data';
+import { D, site, skills, ATLAS_SOURCE, ATLAS_FALLBACK_SOURCE, ATLAS_LICENSE } from '@/lib/data';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ids = ['overview', 'projects', 'skills', 'experience', 'contact'];
-const COLOR_STORAGE_KEY = 'omar-portfolio-primary';
-const DEFAULT_COLOR = '#B99A5B';
-
-const COLOR_PALETTE = [
-  { name: 'Gold', value: '#B99A5B' },
-  { name: 'Acid', value: '#b8ff3d' },
-  { name: 'Electric Blue', value: '#5ee7ff' },
-  { name: 'Violet', value: '#9b7cff' },
-  { name: 'Coral', value: '#ff6b6b' },
-  { name: 'Amber', value: '#ffc857' },
-  { name: 'Mint', value: '#5ff2b3' },
-];
 
 function AtlasMark() {
   return <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="22" r="14" /><ellipse cx="32" cy="22" rx="14" ry="4.6" strokeWidth="1.4" /><path d="M32 8v28" strokeWidth="1.4" /><path d="M8 58 L27 33 M56 58 L37 33" /><path d="M19 49h26" strokeWidth="1.8" /></svg>;
@@ -60,32 +48,6 @@ function Reveal({ children, className = '', delay = 0 }) {
   return <div ref={ref} className={className}>{children}</div>;
 }
 
-function ColorPalette({ color, onChange }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => {
-    const close = (event) => { if (ref.current && !ref.current.contains(event.target)) setOpen(false); };
-    document.addEventListener('pointerdown', close);
-    return () => document.removeEventListener('pointerdown', close);
-  }, []);
-  return (
-    <div ref={ref} className={`color-picker ${open ? 'is-open' : ''}`}>
-      <button type="button" className="color-picker-trigger magnetic" aria-label="Change primary color" aria-expanded={open} onClick={() => setOpen(v => !v)}>
-        <span className="color-picker-dot" style={{ backgroundColor: color }} />
-        <span className="color-picker-label">COLOR</span>
-      </button>
-      {open && <div className="color-palette" role="group" aria-label="Primary color palette">
-        {COLOR_PALETTE.map(item => <button type="button" key={item.value} className={`color-swatch ${color.toLowerCase() === item.value.toLowerCase() ? 'is-selected' : ''}`} style={{ '--swatch': item.value }} aria-label={`Use ${item.name}`} aria-pressed={color.toLowerCase() === item.value.toLowerCase()} onClick={() => { onChange(item.value); setOpen(false); }} />)}
-        <label className="custom-color" title="Choose any color">
-          <input type="color" value={color} aria-label="Choose a custom primary color" onChange={event => onChange(event.target.value)} />
-          <span className="custom-color-swatch" style={{ backgroundColor: color }} />
-          <span className="custom-color-plus">+</span>
-        </label>
-      </div>}
-    </div>
-  );
-}
-
 function InteractiveStack() {
   const groups = Object.entries(skills);
   const [active, setActive] = useState('Odoo');
@@ -101,23 +63,35 @@ function InteractiveStack() {
   </div>;
 }
 
-function CommandPalette({ open, onClose, onColor }) {
+function CommandPalette({ open, onClose }) {
   const inputRef = useRef(null);
+  const paletteRef = useRef(null);
+  const [query, setQuery] = useState('');
   const commands = [
     ['Projects', '#projects'], ['Skills', '#skills'], ['Experience', '#experience'], ['Contact', '#contact'],
   ];
-  useEffect(() => { if (open) requestAnimationFrame(() => inputRef.current?.focus()); }, [open]);
+  useEffect(() => { if (open) { setQuery(''); requestAnimationFrame(() => inputRef.current?.focus()); } }, [open]);
   useEffect(() => {
-    const key = (event) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); onClose(); } };
-    window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key);
-  }, [onClose]);
+    if (!open) return;
+    const key = (event) => {
+      if (event.key !== 'Tab' || !paletteRef.current) return;
+      const focusable = [...paletteRef.current.querySelectorAll('a,button,input')].filter(el => !el.disabled);
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', key);
+    return () => document.removeEventListener('keydown', key);
+  }, [open]);
   if (!open) return null;
+  const visibleCommands = commands.filter(([label]) => label.toLowerCase().includes(query.toLowerCase()));
   return <div className="command-overlay" role="dialog" aria-modal="true" aria-label="Portfolio command palette" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <div className="command-palette">
-      <div className="command-search"><span>⌘K</span><input ref={inputRef} placeholder="Search portfolio..." aria-label="Search portfolio" /></div>
+    <div ref={paletteRef} className="command-palette">
+      <div className="command-search"><span>⌘K</span><input ref={inputRef} value={query} onChange={event => setQuery(event.target.value)} placeholder="Search portfolio..." aria-label="Search portfolio" /></div>
       <div className="command-list">
-        {commands.map(([label, href], i) => <a key={href} href={href} onClick={onClose}><b>{String(i + 1).padStart(2, '0')}</b>{label}<span>↗</span></a>)}
-        <button type="button" onClick={() => { onColor(DEFAULT_COLOR); onClose(); }}><b>05</b>Reset accent color<span>●</span></button>
+        {visibleCommands.map(([label, href], i) => <a key={href} href={href} onClick={onClose}><b>{String(i + 1).padStart(2, '0')}</b>{label}<span>↗</span></a>)}
+        {!visibleCommands.length && query && <p className="command-empty">No matching section.</p>}
       </div>
       <div className="command-footer"><span>ESC to close</span><span>Navigate with mouse or keyboard</span></div>
     </div>
@@ -130,22 +104,11 @@ export default function Page() {
   const progress = useRef(null);
   const progressLabel = useRef(null);
   const t = D.en;
-  const [primaryColor, setPrimaryColor] = useState(DEFAULT_COLOR);
-  const [hydrated, setHydrated] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   useEffect(() => {
     document.documentElement.lang = 'en';
     document.documentElement.dir = 'ltr';
-    const savedColor = window.localStorage.getItem(COLOR_STORAGE_KEY);
-    window.localStorage.removeItem('omar-portfolio-theme'); // the light theme was retired; drop its saved preference
-    if (savedColor && /^#[0-9a-f]{6}$/i.test(savedColor)) setPrimaryColor(savedColor);
-    setHydrated(true);
   }, []);
-
-  useEffect(() => {
-    document.documentElement.style.setProperty('--primary', primaryColor);
-    if (hydrated) window.localStorage.setItem(COLOR_STORAGE_KEY, primaryColor);
-  }, [primaryColor, hydrated]);
 
   useEffect(() => {
     const key = (event) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); setCommandOpen(v => !v); } if (event.key === 'Escape') setCommandOpen(false); };
@@ -169,7 +132,10 @@ export default function Page() {
       if (progressLabel.current) progressLabel.current.textContent = current.toUpperCase();
     };
     lenis.on('scroll', updateProgress);
+    const updateTriggers = () => ScrollTrigger.update();
+    lenis.on('scroll', updateTriggers);
 
+    let anchorRefresh = 0;
     const handleAnchorClick = event => {
       const anchor = event.target.closest?.('a[href^="#"]');
       if (!anchor) return;
@@ -177,7 +143,15 @@ export default function Page() {
       if (!href || href === '#') return;
       const target = document.getElementById(href.slice(1));
       if (!target) return;
-      event.preventDefault(); lenis.scrollTo(target, { offset: 0, duration: 1.15 }); window.history.replaceState(null, '', href);
+      event.preventDefault();
+      lenis.scrollTo(target, {
+        offset: window.innerWidth <= 900 ? -77 : 0,
+        duration: 1.15,
+        onComplete: () => { window.clearTimeout(anchorRefresh); ScrollTrigger.refresh(); ScrollTrigger.update(); },
+      });
+      window.clearTimeout(anchorRefresh);
+      anchorRefresh = window.setTimeout(() => { ScrollTrigger.refresh(); ScrollTrigger.update(); }, 1250);
+      window.history.replaceState(null, '', href);
     };
     document.addEventListener('click', handleAnchorClick, true);
 
@@ -190,7 +164,7 @@ export default function Page() {
       }
     }, root);
 
-    return () => { document.removeEventListener('click', handleAnchorClick, true); lenis.off('scroll', updateProgress); ctx.revert(); lenis.destroy(); gsap.ticker.remove(raf); };
+    return () => { window.clearTimeout(anchorRefresh); document.removeEventListener('click', handleAnchorClick, true); lenis.off('scroll', updateProgress); lenis.off('scroll', updateTriggers); ctx.revert(); lenis.destroy(); gsap.ticker.remove(raf); };
   }, []);
 
   useEffect(() => {
@@ -208,15 +182,15 @@ export default function Page() {
     <Splash />
     <div className="scroll-progress"><span ref={progress} /><b ref={progressLabel}>OVERVIEW</b></div>
     <div ref={cursor} className="cursor-dot" aria-hidden="true" />
-    <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} onColor={setPrimaryColor} />
+    <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} />
 
     <aside className="desktop-nav">
       <a href="#overview" className="nav-reveal brand" aria-label="Omar A. Saeed, back to top"><AtlasMark /></a><div className="nav-rule" />
       <nav>{ids.map((id, i) => <a key={id} href={'#' + id} className="nav-reveal">{String(i + 1).padStart(2, '0')} <span>{t.nav[i]}</span></a>)}</nav>
-      <div className="nav-bottom"><ColorPalette color={primaryColor} onChange={setPrimaryColor} /><span className="vertical-label">AVAILABLE FOR SELECT PROJECTS</span></div>
+      <div className="nav-bottom"><span className="vertical-label">AVAILABLE FOR SELECT PROJECTS</span></div>
     </aside>
 
-    <header className="mobile-nav"><a href="#overview" className="brand" aria-label="Omar A. Saeed, back to top"><AtlasMark /></a><div className="mobile-nav-tools"><ColorPalette color={primaryColor} onChange={setPrimaryColor} /><span className="mobile-status">AVAILABLE FOR SELECT PROJECTS</span></div></header>
+    <header className="mobile-nav"><a href="#overview" className="brand" aria-label="Omar A. Saeed, back to top"><AtlasMark /></a><span className="mobile-status">AVAILABLE FOR SELECT PROJECTS</span></header>
 
     <AtlasStage />
 
@@ -229,7 +203,7 @@ export default function Page() {
 
       <section id="experience" className="section section-pad"><Reveal><div className="section-heading"><span className="section-number">04</span><div><p className="eyebrow">{t.expLabel}</p><h2>{t.hx}</h2></div></div></Reveal><div className="exp-body"><div className="timeline">{t.tl.map(([w,a,b],i)=><Reveal key={a} delay={i*.06}><div className="timeline-item"><span className="timeline-year">{w}</span><div className="timeline-line"><i/></div><div><h3>{a}</h3><p>{b}</p></div></div></Reveal>)}</div><AnubisFigure /></div></section>
 
-      <section id="contact" className="contact section-pad"><div className="contact-orb parallax" /><Reveal><p className="eyebrow">{t.contactLabel}</p><h2>{t.ch}</h2><p className="contact-copy">{t.cs}</p><a className="contact-email magnetic" href="mailto:0omarahmed73@gmail.com"><Magnetic>0omarahmed73@gmail.com <span>↗</span></Magnetic></a><div className="socials"><a href="https://wa.me/201553583288" target="_blank" rel="noreferrer">WhatsApp ↗</a><a href="https://linkedin.com/in/0omarahmed73" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://github.com/0omarahmed73" target="_blank" rel="noreferrer">GitHub ↗</a></div></Reveal><footer><span>© {new Date().getFullYear()} Omar A. Saeed</span><span>CAIRO / EGYPT</span><span>⌘K COMMANDS</span></footer><p className="atlas-credit">3D model: <a href={ATLAS_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas holding the Earth&rdquo; by Wabbaboy</a>, licensed under <a href={ATLAS_LICENSE} target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Changes: re-lit, re-framed and given a bronze finish. The still-image fallback is a render of <a href={ATLAS_FALLBACK_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas&rdquo; by LastRights93</a> (CC BY 4.0), recoloured to bronze.</p></section>
+      <section id="contact" className="contact section-pad"><div className="contact-orb parallax" /><Reveal><p className="eyebrow">{t.contactLabel}</p><h2>{t.ch}</h2><p className="contact-copy">{t.cs}</p><a className="contact-email magnetic" href={`mailto:${site.contact.email}`}><Magnetic>{site.contact.email} <span>↗</span></Magnetic></a><div className="socials"><a href={site.contact.whatsapp} target="_blank" rel="noreferrer">WhatsApp ↗</a><a href={site.contact.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a><a href={site.contact.github} target="_blank" rel="noreferrer">GitHub ↗</a></div></Reveal><footer><span>© {new Date().getFullYear()} Omar A. Saeed</span><span>CAIRO / EGYPT</span><span>⌘K COMMANDS</span></footer><p className="atlas-credit">3D model: <a href={ATLAS_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas holding the Earth&rdquo; by Wabbaboy</a>, licensed under <a href={ATLAS_LICENSE} target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Changes: re-lit, re-framed and given a bronze finish. The still-image fallback is a render of <a href={ATLAS_FALLBACK_SOURCE} target="_blank" rel="noopener noreferrer">&ldquo;Atlas&rdquo; by LastRights93</a> (CC BY 4.0), recoloured to bronze.</p></section>
     </main>
   </div>;
 }

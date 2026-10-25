@@ -101,10 +101,13 @@ body{font-family:var(--f-ui),var(--f-body),system-ui,sans-serif;line-height:1.6}
   .stat{padding:26px 14px 26px var(--gutter)}.stat+.stat{padding-left:14px}.stat strong{font-size:clamp(44px,12vw,60px)}.stat span:last-child{font-size:9px;letter-spacing:.1em;line-height:1.5}
   .timeline-item{grid-template-columns:96px 22px 1fr;gap:12px;padding:26px 0}
   .timeline-item h3{font-size:24px}.timeline-year{font-size:16px}
-  .contact h2{font-size:clamp(46px,14vw,76px);line-height:.96}
+  .contact{min-height:auto;padding-top:120px;padding-bottom:32px;justify-content:flex-start;overflow:clip;scroll-margin-top:77px}
+  .contact h2{font-size:clamp(46px,14vw,76px);line-height:.96;text-wrap:balance}
   .contact-email{font-size:clamp(20px,6.2vw,30px);overflow-wrap:anywhere}.contact-email span span{margin-left:14px}
   .contact-orb{width:80vw;height:80vw;right:-38vw;top:4%}
-  .contact footer,footer{left:var(--gutter);right:var(--gutter)}footer span:last-child{display:none}
+  .atlas-credit{order:2;margin-top:48px;max-width:100%}
+  .contact footer{order:3;position:static;margin-top:28px;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;left:auto;right:auto;bottom:auto;width:100%;box-sizing:border-box}
+  .contact footer span{min-width:0}.contact footer span:nth-child(2){text-align:right}.contact footer span:last-child{display:none}
   .anubis-guard{width:min(42vw,150px);margin:26px auto 0}
 }
 
